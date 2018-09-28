@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="公式学习和证明全概率公式B1, B2… Bi是事件E的样本空间Ω的划分，A为E的事件，则 P(A) = \sum_{i=1}^n P(B_i)P(A|B_i)称为全概率公式 例子某人坐火车，汽车，轮船，飞机的概率分别是0.3，0.2，0.1，0.4，如果乘坐火车，汽车，轮船迟到的概率分别是1/4，1/3，1/12，乘坐飞机不会迟到。求他迟到的概率 解：A为表示事件“迟到”，B1,B2,B3,B4分">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NaiveBayes">
+<meta property="og:url" content="http://yoursite.com/2018/09/27/NaiveBayes/index.html">
+<meta property="og:site_name" content="rivendell">
+<meta property="og:description" content="公式学习和证明全概率公式B1, B2… Bi是事件E的样本空间Ω的划分，A为E的事件，则 P(A) = \sum_{i=1}^n P(B_i)P(A|B_i)称为全概率公式 例子某人坐火车，汽车，轮船，飞机的概率分别是0.3，0.2，0.1，0.4，如果乘坐火车，汽车，轮船迟到的概率分别是1/4，1/3，1/12，乘坐飞机不会迟到。求他迟到的概率 解：A为表示事件“迟到”，B1,B2,B3,B4分">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-09-28T04:03:39.516Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="NaiveBayes">
+<meta name="twitter:description" content="公式学习和证明全概率公式B1, B2… Bi是事件E的样本空间Ω的划分，A为E的事件，则 P(A) = \sum_{i=1}^n P(B_i)P(A|B_i)称为全概率公式 例子某人坐火车，汽车，轮船，飞机的概率分别是0.3，0.2，0.1，0.4，如果乘坐火车，汽车，轮船迟到的概率分别是1/4，1/3，1/12，乘坐飞机不会迟到。求他迟到的概率 解：A为表示事件“迟到”，B1,B2,B3,B4分">
+    
+    
+        
+          
+              <link rel="shortcut icon" href="/images/favicon.ico">
+          
+        
+        
+          
+            <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+          
+        
+        
+          
+            <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+          
+        
+    
+    <!-- title -->
+    <title>NaiveBayes</title>
+    <!-- styles -->
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- persian styles -->
+    
+      <link rel="stylesheet" href="/css/rtl.css">
+    
+    <!-- rss --><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+    
+    
+</head>
+
+<body class="max-width mx-auto px3 ltl">    
+      <!-- hexo-inject:begin --><!-- hexo-inject:end --><div id="header-post">
+  <a id="menu-icon" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about">About</a></li>
+         
+          <li><a href="/archives">Writing</a></li>
+         
+          <li><a href="/tags">tags</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" href="/2018/09/27/SVM/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://yoursite.com/2018/09/27/NaiveBayes/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://yoursite.com/2018/09/27/NaiveBayes/&text=NaiveBayes"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://yoursite.com/2018/09/27/NaiveBayes/&title=NaiveBayes"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://yoursite.com/2018/09/27/NaiveBayes/&is_video=false&description=NaiveBayes"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=NaiveBayes&body=Check out this article: http://yoursite.com/2018/09/27/NaiveBayes/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://yoursite.com/2018/09/27/NaiveBayes/&title=NaiveBayes"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://yoursite.com/2018/09/27/NaiveBayes/&title=NaiveBayes"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://yoursite.com/2018/09/27/NaiveBayes/&title=NaiveBayes"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://yoursite.com/2018/09/27/NaiveBayes/&title=NaiveBayes"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://yoursite.com/2018/09/27/NaiveBayes/&name=NaiveBayes&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#公式学习和证明"><span class="toc-number">1.</span> <span class="toc-text">公式学习和证明</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#全概率公式"><span class="toc-number">1.1.</span> <span class="toc-text">全概率公式</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#例子"><span class="toc-number">1.1.0.1.</span> <span class="toc-text">例子</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#贝叶斯公式"><span class="toc-number">1.2.</span> <span class="toc-text">贝叶斯公式</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#朴素贝叶斯"><span class="toc-number">2.</span> <span class="toc-text">朴素贝叶斯</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index my4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        NaiveBayes
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">rivendell</span>
+      </span>
+      
+    <div class="postdate">
+        <time datetime="2018-09-27T09:29:07.000Z" itemprop="datePublished">2018-09-27</time>
+    </div>
+
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h2 id="公式学习和证明"><a href="#公式学习和证明" class="headerlink" title="公式学习和证明"></a>公式学习和证明</h2><h3 id="全概率公式"><a href="#全概率公式" class="headerlink" title="全概率公式"></a>全概率公式</h3><p>B1, B2… Bi是事件E的样本空间Ω的划分，A为E的事件，则</p>
+<script type="math/tex; mode=display">P(A) = \sum_{i=1}^n P(B_i)P(A|B_i)</script><p>称为全概率公式</p>
+<h5 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h5><p>某人坐火车，汽车，轮船，飞机的概率分别是0.3，0.2，0.1，0.4，如果乘坐火车，汽车，轮船迟到的概率分别是1/4，1/3，1/12，乘坐飞机不会迟到。求他迟到的概率</p>
+<p><strong>解</strong>：A为表示事件“迟到”，B1,B2,B3,B4分别表示坐火车，汽车，轮船，飞机等事件，已知P(B1)=0.3,P(B2)=0.2, P(B3)=0.1, P(B4)=0.4,  P(A|B1) = 1/4,P(A|B2) = 1/3,P(A|B3) = 1/12,P(A|B4) = 0<br>条件都已知，则直接根据全概率公式算出P(A)</p>
+<p><strong>证明</strong>：<br>A = AΩ = A(B1∪B1∪…∪Bi) 因为<br>P(A∪B) = P(A) + P(B) - P(AB)<br>且BiBj=∅</p>
+<script type="math/tex; mode=display">P(A) = \sum_{i =1}^n P(AB_i) \quad (1)</script><p>再由条件概率公式P(A|B) =</p>
+<script type="math/tex; mode=display">P(A|B) = \dfrac{P(AB)}{P(B)} \quad (2)</script><p>把公式2带到1证明完毕</p>
+<h3 id="贝叶斯公式"><a href="#贝叶斯公式" class="headerlink" title="贝叶斯公式"></a>贝叶斯公式</h3><p>试验E的样本空间为Ω，A为E的事件，B1,B2,…,Bn为Ω的一个划分，P(A) &gt; 0, P(Bi) &gt; 0, i = 0,1,..,n</p>
+<script type="math/tex; mode=display">P(B_i|A) = \dfrac{P(B_i)P(A|B_i)} {\sum_{j = 1}^nP(B_j)P(A|B_j)},\, i=1,2...n</script><p><strong>证明</strong>：<br>由条件概率和乘法公式得</p>
+<script type="math/tex; mode=display">P(B_i|A) = \dfrac{P(AB_i)}{P(A)} = \dfrac{P(Bi)P(A|B_i)}{P(A)}</script><p>P(A)由全概率公式可以计算出来，再代入上式，证明完毕</p>
+<h2 id="朴素贝叶斯"><a href="#朴素贝叶斯" class="headerlink" title="朴素贝叶斯"></a>朴素贝叶斯</h2>
+  </div>
+</article>
+
+    <div class="blog-post-comments">
+        <div id="disqus_thread">
+            <noscript>Please enable JavaScript to view the comments.</noscript>
+        </div>
+    </div>
+
+
+
+    </div>
+    
+      <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about">About</a></li>
+         
+          <li><a href="/archives">Writing</a></li>
+         
+          <li><a href="/tags">tags</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#公式学习和证明"><span class="toc-number">1.</span> <span class="toc-text">公式学习和证明</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#全概率公式"><span class="toc-number">1.1.</span> <span class="toc-text">全概率公式</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#例子"><span class="toc-number">1.1.0.1.</span> <span class="toc-text">例子</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#贝叶斯公式"><span class="toc-number">1.2.</span> <span class="toc-text">贝叶斯公式</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#朴素贝叶斯"><span class="toc-number">2.</span> <span class="toc-text">朴素贝叶斯</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://yoursite.com/2018/09/27/NaiveBayes/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://yoursite.com/2018/09/27/NaiveBayes/&text=NaiveBayes"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://yoursite.com/2018/09/27/NaiveBayes/&title=NaiveBayes"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://yoursite.com/2018/09/27/NaiveBayes/&is_video=false&description=NaiveBayes"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=NaiveBayes&body=Check out this article: http://yoursite.com/2018/09/27/NaiveBayes/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://yoursite.com/2018/09/27/NaiveBayes/&title=NaiveBayes"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://yoursite.com/2018/09/27/NaiveBayes/&title=NaiveBayes"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://yoursite.com/2018/09/27/NaiveBayes/&title=NaiveBayes"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://yoursite.com/2018/09/27/NaiveBayes/&title=NaiveBayes"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://yoursite.com/2018/09/27/NaiveBayes/&name=NaiveBayes&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+    
+    <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy; 2018 leon
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about">About</a></li>
+         
+          <li><a href="/archives">Writing</a></li>
+         
+          <li><a href="/tags">tags</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>
+<!-- styles -->
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+<link rel="stylesheet" href="/lib/justified-gallery/css/justifiedGallery.min.css">
+
+<!-- jquery -->
+<script src="/lib/jquery/jquery.min.js"></script>
+<script src="/lib/justified-gallery/js/jquery.justifiedGallery.min.js"></script>
+<script src="/js/main.js"></script>
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Disqus Comments -->
+
+    <script type="text/javascript">
+        var disqus_shortname = 'cactus-1';
+
+        (function(){
+            var dsq = document.createElement('script');
+            dsq.type = 'text/javascript';
+            dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        }());
+    </script>
+
+

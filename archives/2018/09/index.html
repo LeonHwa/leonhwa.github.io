@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <!-- so meta -->
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><!-- so meta -->
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="HandheldFriendly" content="True">
@@ -39,14 +39,13 @@
     
       <link rel="stylesheet" href="/css/rtl.css">
     
-    <!-- rss -->
+    <!-- rss --><!-- hexo-inject:begin --><!-- hexo-inject:end -->
     
     
 </head>
 
-<body class="max-width mx-auto px3 ltl">
-    
-    <div class="content index my4">
+<body class="max-width mx-auto px3 ltl">    
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="content index my4">
         
           <header id="header">
   <a href="/">
@@ -88,6 +87,26 @@
       
       
         <h2>2018</h2>
+      
+      <li class="post-item">
+        
+    <div class="meta">
+        <time datetime="2018-09-27T09:29:07.000Z" itemprop="datePublished">2018-09-27</time>
+    </div>
+
+
+        <span>
+    
+        <a class="" href="/2018/09/27/NaiveBayes/">NaiveBayes</a>
+    
+
+
+</span>
+      </li>
+    
+      
+      
+      
       
       <li class="post-item">
         
@@ -153,6 +172,21 @@
   </div>
 </footer>
 
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 </body>
 </html>
 <!-- styles -->
