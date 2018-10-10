@@ -6,17 +6,18 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="HandheldFriendly" content="True">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-    <meta name="description" content="公式学习和证明全概率公式B1, B2… Bi是事件E的样本空间Ω的划分，A为E的事件，则 P(A) = \sum_{i=1}^n P(B_i)P(A|B_i)称为全概率公式 例子某人坐火车，汽车，轮船，飞机的概率分别是0.3，0.2，0.1，0.4，如果乘坐火车，汽车，轮船迟到的概率分别是1/4，1/3，1/12，乘坐飞机不会迟到。求他迟到的概率 解：A为表示事件“迟到”，B1,B2,B3,B4分">
+    <meta name="description" content="公式学习和证明全概率公式 $B_1, B_2,…, B_i$是事件$E$的样本空间Ω的划分，$A$为$E$的事件，则   P(A) = \sum_{i=1}^n P(B_i)P(A|B_i)  \quad (1)称为全概率公式 证明：$A = A\Omega  = A(B_1\cup B_2\cup …\cup B_i)$ 因为$P(A \cup B) = P(A) + P(B) - P(AB)$">
+<meta name="keywords" content="ML">
 <meta property="og:type" content="article">
 <meta property="og:title" content="NaiveBayes">
 <meta property="og:url" content="http://yoursite.com/2018/09/27/NaiveBayes/index.html">
 <meta property="og:site_name" content="rivendell">
-<meta property="og:description" content="公式学习和证明全概率公式B1, B2… Bi是事件E的样本空间Ω的划分，A为E的事件，则 P(A) = \sum_{i=1}^n P(B_i)P(A|B_i)称为全概率公式 例子某人坐火车，汽车，轮船，飞机的概率分别是0.3，0.2，0.1，0.4，如果乘坐火车，汽车，轮船迟到的概率分别是1/4，1/3，1/12，乘坐飞机不会迟到。求他迟到的概率 解：A为表示事件“迟到”，B1,B2,B3,B4分">
+<meta property="og:description" content="公式学习和证明全概率公式 $B_1, B_2,…, B_i$是事件$E$的样本空间Ω的划分，$A$为$E$的事件，则   P(A) = \sum_{i=1}^n P(B_i)P(A|B_i)  \quad (1)称为全概率公式 证明：$A = A\Omega  = A(B_1\cup B_2\cup …\cup B_i)$ 因为$P(A \cup B) = P(A) + P(B) - P(AB)$">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-09-28T04:03:39.516Z">
+<meta property="og:updated_time" content="2018-10-10T07:32:50.667Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="NaiveBayes">
-<meta name="twitter:description" content="公式学习和证明全概率公式B1, B2… Bi是事件E的样本空间Ω的划分，A为E的事件，则 P(A) = \sum_{i=1}^n P(B_i)P(A|B_i)称为全概率公式 例子某人坐火车，汽车，轮船，飞机的概率分别是0.3，0.2，0.1，0.4，如果乘坐火车，汽车，轮船迟到的概率分别是1/4，1/3，1/12，乘坐飞机不会迟到。求他迟到的概率 解：A为表示事件“迟到”，B1,B2,B3,B4分">
+<meta name="twitter:description" content="公式学习和证明全概率公式 $B_1, B_2,…, B_i$是事件$E$的样本空间Ω的划分，$A$为$E$的事件，则   P(A) = \sum_{i=1}^n P(B_i)P(A|B_i)  \quad (1)称为全概率公式 证明：$A = A\Omega  = A(B_1\cup B_2\cup …\cup B_i)$ 因为$P(A \cup B) = P(A) + P(B) - P(AB)$">
     
     
         
@@ -99,7 +100,7 @@
 
     </div>
     <div id="toc">
-      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#公式学习和证明"><span class="toc-number">1.</span> <span class="toc-text">公式学习和证明</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#全概率公式"><span class="toc-number">1.1.</span> <span class="toc-text">全概率公式</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#例子"><span class="toc-number">1.1.0.1.</span> <span class="toc-text">例子</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#贝叶斯公式"><span class="toc-number">1.2.</span> <span class="toc-text">贝叶斯公式</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#朴素贝叶斯"><span class="toc-number">2.</span> <span class="toc-text">朴素贝叶斯</span></a></li></ol>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#公式学习和证明"><span class="toc-number">1.</span> <span class="toc-text">公式学习和证明</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#全概率公式"><span class="toc-number">1.0.1.</span> <span class="toc-text">全概率公式</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#例子"><span class="toc-number">1.0.1.1.</span> <span class="toc-text">例子</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#贝叶斯公式"><span class="toc-number">1.0.2.</span> <span class="toc-text">贝叶斯公式</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#朴素贝叶斯"><span class="toc-number">2.</span> <span class="toc-text">朴素贝叶斯</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#例子-1"><span class="toc-number">2.0.0.1.</span> <span class="toc-text">例子</span></a></li></ol></li></ol></li></ol></li></ol>
     </div>
   </span>
 </div>
@@ -127,23 +128,137 @@
 
 
       
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link" href="/tags/ML/">ML</a>
+    </div>
+
 
     </div>
   </header>
   
 
   <div class="content" itemprop="articleBody">
-    <h2 id="公式学习和证明"><a href="#公式学习和证明" class="headerlink" title="公式学习和证明"></a>公式学习和证明</h2><h3 id="全概率公式"><a href="#全概率公式" class="headerlink" title="全概率公式"></a>全概率公式</h3><p>B1, B2… Bi是事件E的样本空间Ω的划分，A为E的事件，则</p>
-<script type="math/tex; mode=display">P(A) = \sum_{i=1}^n P(B_i)P(A|B_i)</script><p>称为全概率公式</p>
-<h5 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h5><p>某人坐火车，汽车，轮船，飞机的概率分别是0.3，0.2，0.1，0.4，如果乘坐火车，汽车，轮船迟到的概率分别是1/4，1/3，1/12，乘坐飞机不会迟到。求他迟到的概率</p>
-<p><strong>解</strong>：A为表示事件“迟到”，B1,B2,B3,B4分别表示坐火车，汽车，轮船，飞机等事件，已知P(B1)=0.3,P(B2)=0.2, P(B3)=0.1, P(B4)=0.4,  P(A|B1) = 1/4,P(A|B2) = 1/3,P(A|B3) = 1/12,P(A|B4) = 0<br>条件都已知，则直接根据全概率公式算出P(A)</p>
-<p><strong>证明</strong>：<br>A = AΩ = A(B1∪B1∪…∪Bi) 因为<br>P(A∪B) = P(A) + P(B) - P(AB)<br>且BiBj=∅</p>
-<script type="math/tex; mode=display">P(A) = \sum_{i =1}^n P(AB_i) \quad (1)</script><p>再由条件概率公式P(A|B) =</p>
-<script type="math/tex; mode=display">P(A|B) = \dfrac{P(AB)}{P(B)} \quad (2)</script><p>把公式2带到1证明完毕</p>
-<h3 id="贝叶斯公式"><a href="#贝叶斯公式" class="headerlink" title="贝叶斯公式"></a>贝叶斯公式</h3><p>试验E的样本空间为Ω，A为E的事件，B1,B2,…,Bn为Ω的一个划分，P(A) &gt; 0, P(Bi) &gt; 0, i = 0,1,..,n</p>
-<script type="math/tex; mode=display">P(B_i|A) = \dfrac{P(B_i)P(A|B_i)} {\sum_{j = 1}^nP(B_j)P(A|B_j)},\, i=1,2...n</script><p><strong>证明</strong>：<br>由条件概率和乘法公式得</p>
-<script type="math/tex; mode=display">P(B_i|A) = \dfrac{P(AB_i)}{P(A)} = \dfrac{P(Bi)P(A|B_i)}{P(A)}</script><p>P(A)由全概率公式可以计算出来，再代入上式，证明完毕</p>
-<h2 id="朴素贝叶斯"><a href="#朴素贝叶斯" class="headerlink" title="朴素贝叶斯"></a>朴素贝叶斯</h2>
+    <h2 id="公式学习和证明"><a href="#公式学习和证明" class="headerlink" title="公式学习和证明"></a>公式学习和证明</h2><h4 id="全概率公式"><a href="#全概率公式" class="headerlink" title="全概率公式"></a>全概率公式</h4><p> $B_1, B_2,…, B_i$是事件$E$的样本空间Ω的划分，$A$为$E$的事件，则</p>
+<script type="math/tex; mode=display">
+ P(A) = \sum_{i=1}^n P(B_i)P(A|B_i)  \quad (1)</script><p>称为全概率公式</p>
+<p><strong>证明</strong>：<br>$A = A\Omega  = A(B_1\cup B_2\cup …\cup B_i)$ 因为<br>$P(A \cup B) = P(A) + P(B) - P(AB)$<br>且$B_iB_j=\varnothing $</p>
+<script type="math/tex; mode=display">
+ P(A) = \sum_{i =1}^n P(AB_i) \quad (2)</script><p>再由条件概率公式$P(A|B)$ =</p>
+<script type="math/tex; mode=display">
+ P(A|B) = \dfrac{P(AB)}{P(B)} \quad (3)</script><p>把公式3带到公式2中，证明完毕。</p>
+<h5 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h5><blockquote>
+<p>某人坐火车，汽车，轮船，飞机的概率分别是0.3，0.2，0.1，0.4，如果乘坐火车，汽车，轮船迟到的概率分别是1/4，1/3，1/12，乘坐飞机不会迟到。求他迟到的概率</p>
+</blockquote>
+<p><strong>解</strong>：A为表示事件“迟到”，$B_1,B_2,B_3,B_4$分别表示坐火车，汽车，轮船，飞机等事件，已知$P(B_1)=0.3,P(B_2)=0.2, P(B_3)=0.1, P(B_4)=0.4,  P(A|B_1) = 1/4,P(A|B_2) = 1/3,P(A|B_3) = 1/12,P(A|B_4) = 0$<br>条件都已知，则直接根据全概率公式算出$P(A)$</p>
+<h4 id="贝叶斯公式"><a href="#贝叶斯公式" class="headerlink" title="贝叶斯公式"></a>贝叶斯公式</h4><p>试验$E$的样本空间为$\Omega$ ，$A$为$E$的事件，$B_1,B_2,…,B_n$为$\Omega$的一个划分，$P(A) &gt; 0, P(B_i) &gt; 0, i = 0,1,..,n$</p>
+<script type="math/tex; mode=display">
+ P(B_i|A) = \dfrac{P(B_i)P(A|B_i)} {\sum_{j = 1}^nP(B_j)P(A|B_j)},\, i=1,2...n \quad (4)</script><p><strong>证明</strong>：<br>由条件概率和乘法公式得</p>
+<script type="math/tex; mode=display">
+ P(B_i|A) = \dfrac{P(AB_i)}{P(A)} = \dfrac{P(Bi)P(A|B_i)}{P(A)}  \quad (5)</script><p>$P(A)$由全概率公式可以计算出来，再代入上式，证明完毕</p>
+<h2 id="朴素贝叶斯"><a href="#朴素贝叶斯" class="headerlink" title="朴素贝叶斯"></a>朴素贝叶斯</h2><p>输入空间：$\chi\subseteq R^n$是$n$ 维向量的集合,输出空间标记集合$Y = \{c_1,c_2,…,c_k \} $</p>
+<p><strong>先验概率分布:</strong></p>
+<script type="math/tex; mode=display">
+P(Y=c_k), \quad k=1,2,...,K \quad (6)</script><p><strong>条件概率分布:</strong></p>
+<script type="math/tex; mode=display">
+P(X=x|Y=c_k) = P(X^{(1)} = x^{(1)},..,X^{(n)}=x^{(n)}|Y=c_k)  \quad (7)</script><p>朴素贝叶斯会假设每个特征都是独立的，由于是个较强的假设，所以朴素贝叶斯由此得名。具体如下</p>
+<script type="math/tex; mode=display">
+P(X=x|Y=c_k) = P(X^{(1)} = x^{(1)},..,X^{(n)}=x^{(n)}|Y=c_k)   =  \prod_{j = 1}^{n}P(X^{(n)} = x^{(n)}|Y = c_k)  \quad (8)</script><p>根据贝叶斯公式得出后验概率</p>
+<script type="math/tex; mode=display">
+P(Y=c_k|X=x)  = \frac{P(X=x|Y=c_k)P(Y=c_k)}{\sum_k P(X=x|Y=c_k)P(Y=c_k)}</script><p>把公式3带，得</p>
+<script type="math/tex; mode=display">
+P(Y=c_k|X=x) = \frac{P(Y=c_k)\prod_jP(X^{(j)}=x^{(j)})|P(Y=c_k)}{\sum_kP(Y=c_k)\prod_jP(X^{(j)}=x^{(j)}|Y=c_k)} \quad k=1,2,...K  \quad (9)</script><p>式9中分母对所有的<script type="math/tex">c_k</script>都相同，对所有类别来说都是常数，式9的最大化就是分子的最大化</p>
+<script type="math/tex; mode=display">
+arg \max_{c_k} P(Y=c_k)\prod_jP(X^{(j)}=x^{(j)})|P(Y=c_k)   \quad (10)</script><h5 id="例子-1"><a href="#例子-1" class="headerlink" title="例子"></a>例子</h5><p>$X^{(1)},X^{(2)}$为特征，取值的集合为$A_1 = \{1,2,3\}, A_2 = \{S,M,L\}$, $Y$为类标记，$Y\in  C = \{1,-1\}$,试用朴素贝叶斯分类器确定$x = \{2,S\}^{T}$的类标记$y$</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th></th>
+<th>1</th>
+<th>2</th>
+<th>3</th>
+<th>4</th>
+<th>5</th>
+<th>6</th>
+<th>7</th>
+<th>8</th>
+<th>9</th>
+<th>10</th>
+<th>11</th>
+<th>12</th>
+<th>13</th>
+<th>14</th>
+<th>15</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>$X^{(1)}$</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>2</td>
+<td>2</td>
+<td>2</td>
+<td>2</td>
+<td>2</td>
+<td>3</td>
+<td>3</td>
+<td>3</td>
+<td>3</td>
+<td>3</td>
+</tr>
+<tr>
+<td>$X^{(2)}$</td>
+<td>S</td>
+<td>M</td>
+<td>M</td>
+<td>S</td>
+<td>S</td>
+<td>S</td>
+<td>M</td>
+<td>M</td>
+<td>L</td>
+<td>L</td>
+<td>L</td>
+<td>M</td>
+<td>M</td>
+<td>L</td>
+<td>L</td>
+</tr>
+<tr>
+<td>$Y$</td>
+<td>-1</td>
+<td>-1</td>
+<td>1</td>
+<td>1</td>
+<td>-1</td>
+<td>-1</td>
+<td>-1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>-1</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>解</strong>:<br> 由表得出 $ P(Y = 1) = \frac{9}{15}$   $ P(Y = -1) = \frac{6}{15} $</p>
+<p> $ P(X^{(1)} = 1 | Y = 1) =  \frac{2}{9}  \quad P(X^{(1)} = 2 | Y = 1) =  \frac{3}{9}  \quad P(X^{(1)} = 3 | Y = 1) =  \frac{4}{9}$</p>
+<p> $ P(X^{(2)} = S | Y = 1) =  \frac{1}{9}  \quad P(X^{(2)} = M | Y = 1) =  \frac{4}{9}  \quad P(X^{(2)} = L | Y = 1) =  \frac{4}{9}$</p>
+<p> $ P(X^{(1)} = 1 | Y = -1) =  \frac{3}{6}  \quad P(X^{(1)} = 2 | Y = -1) =  \frac{2}{6}  \quad P(X^{(1)} = 3 | Y = -1) =  \frac{1}{6}$</p>
+<p> $ P(X^{(2)} = S | Y = -1) =  \frac{3}{6}  \quad P(X^{(2)} = M | Y = -1) =  \frac{2}{6}  \quad P(X^{(2)} = L | Y = -1) =  \frac{1}{6}$<br> 对于给定的$x = \{2,S\}^{T}$计算：</p>
+<p> 由朴素贝叶斯公式10得出<br> $P(Y = 1)P(X^{(1)} = 2 | Y = 1) P(X^{(2)} = S | Y = 1) = \frac{9}{15} <em>  \frac{3}{9}  </em>  \frac{1}{9} = \frac{1}{45}$</p>
+<p>  $P(Y = -1)P(X^{(1)} = 2 | Y = -1) P(X^{(2)} = S | Y = -1) = \frac{6}{15} <em>  \frac{2}{6}  </em>  \frac{3}{6} = \frac{1}{15}$</p>
+<p>  $\frac{1}{15} &gt; \frac{1}{45}$,则$y$= -1</p>
+
   </div>
 </article>
 
@@ -175,7 +290,7 @@
     </div>
 
     <div id="toc-footer" style="display: none">
-      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#公式学习和证明"><span class="toc-number">1.</span> <span class="toc-text">公式学习和证明</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#全概率公式"><span class="toc-number">1.1.</span> <span class="toc-text">全概率公式</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#例子"><span class="toc-number">1.1.0.1.</span> <span class="toc-text">例子</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#贝叶斯公式"><span class="toc-number">1.2.</span> <span class="toc-text">贝叶斯公式</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#朴素贝叶斯"><span class="toc-number">2.</span> <span class="toc-text">朴素贝叶斯</span></a></li></ol>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#公式学习和证明"><span class="toc-number">1.</span> <span class="toc-text">公式学习和证明</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#全概率公式"><span class="toc-number">1.0.1.</span> <span class="toc-text">全概率公式</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#例子"><span class="toc-number">1.0.1.1.</span> <span class="toc-text">例子</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#贝叶斯公式"><span class="toc-number">1.0.2.</span> <span class="toc-text">贝叶斯公式</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#朴素贝叶斯"><span class="toc-number">2.</span> <span class="toc-text">朴素贝叶斯</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#例子-1"><span class="toc-number">2.0.0.1.</span> <span class="toc-text">例子</span></a></li></ol></li></ol></li></ol></li></ol>
     </div>
 
     <div id="share-footer" style="display: none">
