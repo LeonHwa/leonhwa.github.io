@@ -6,18 +6,18 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="HandheldFriendly" content="True">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-    <meta name="description" content="MathJax.Hub.Config({ tex2jax: {inlineMath: [[&apos;$&apos;,&apos;$&apos;],[&apos;\\(&apos;,&apos;\\)&apos;]]} });     公式学习和证明全概率公式 $B_1, B_2,…, B_i$是事件$E$的样本空间$\Omega$ 的划分，$A$为$E$的事件，则   P(A) = \sum_{i=1}^n P(B_i)P(A|B_i)  \quad (1)称为全概率公式">
+    <meta name="description" content="公式学习和证明全概率公式 $B_1, B_2,…, B_i$是事件$E$的样本空间$\Omega$ 的划分，$A$为$E$的事件，则   P(A) = \sum_{i=1}^n P(B_i)P(A|B_i)  \quad (1)称为全概率公式 证明：$A = A\Omega  = A(B_1\cup B_2\cup …\cup B_i)$ 因为$P(A \cup B) = P(A) + P(B)">
 <meta name="keywords" content="ML">
 <meta property="og:type" content="article">
 <meta property="og:title" content="NaiveBayes">
 <meta property="og:url" content="http://yoursite.com/2018/09/27/NaiveBayes/index.html">
 <meta property="og:site_name" content="rivendell">
-<meta property="og:description" content="MathJax.Hub.Config({ tex2jax: {inlineMath: [[&apos;$&apos;,&apos;$&apos;],[&apos;\\(&apos;,&apos;\\)&apos;]]} });     公式学习和证明全概率公式 $B_1, B_2,…, B_i$是事件$E$的样本空间$\Omega$ 的划分，$A$为$E$的事件，则   P(A) = \sum_{i=1}^n P(B_i)P(A|B_i)  \quad (1)称为全概率公式">
+<meta property="og:description" content="公式学习和证明全概率公式 $B_1, B_2,…, B_i$是事件$E$的样本空间$\Omega$ 的划分，$A$为$E$的事件，则   P(A) = \sum_{i=1}^n P(B_i)P(A|B_i)  \quad (1)称为全概率公式 证明：$A = A\Omega  = A(B_1\cup B_2\cup …\cup B_i)$ 因为$P(A \cup B) = P(A) + P(B)">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-10-10T08:39:05.734Z">
+<meta property="og:updated_time" content="2018-10-10T08:49:57.730Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="NaiveBayes">
-<meta name="twitter:description" content="MathJax.Hub.Config({ tex2jax: {inlineMath: [[&apos;$&apos;,&apos;$&apos;],[&apos;\\(&apos;,&apos;\\)&apos;]]} });     公式学习和证明全概率公式 $B_1, B_2,…, B_i$是事件$E$的样本空间$\Omega$ 的划分，$A$为$E$的事件，则   P(A) = \sum_{i=1}^n P(B_i)P(A|B_i)  \quad (1)称为全概率公式">
+<meta name="twitter:description" content="公式学习和证明全概率公式 $B_1, B_2,…, B_i$是事件$E$的样本空间$\Omega$ 的划分，$A$为$E$的事件，则   P(A) = \sum_{i=1}^n P(B_i)P(A|B_i)  \quad (1)称为全概率公式 证明：$A = A\Omega  = A(B_1\cup B_2\cup …\cup B_i)$ 因为$P(A \cup B) = P(A) + P(B)">
     
     
         
@@ -139,9 +139,7 @@
   
 
   <div class="content" itemprop="articleBody">
-    <script type="text/x-mathjax-config"> MathJax.Hub.Config({ tex2jax: {inlineMath: [['$','$'],['\\(','\\)']]} }); </script> <script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"> </script>
-
-<h2 id="公式学习和证明"><a href="#公式学习和证明" class="headerlink" title="公式学习和证明"></a>公式学习和证明</h2><h4 id="全概率公式"><a href="#全概率公式" class="headerlink" title="全概率公式"></a>全概率公式</h4><p> $B_1, B_2,…, B_i$是事件$E$的样本空间$\Omega$ 的划分，$A$为$E$的事件，则</p>
+    <h2 id="公式学习和证明"><a href="#公式学习和证明" class="headerlink" title="公式学习和证明"></a>公式学习和证明</h2><h4 id="全概率公式"><a href="#全概率公式" class="headerlink" title="全概率公式"></a>全概率公式</h4><p> $B_1, B_2,…, B_i$是事件$E$的样本空间$\Omega$ 的划分，$A$为$E$的事件，则</p>
 <script type="math/tex; mode=display">
  P(A) = \sum_{i=1}^n P(B_i)P(A|B_i)  \quad (1)</script><p>称为全概率公式</p>
 <p><strong>证明</strong>：<br>$A = A\Omega  = A(B_1\cup B_2\cup …\cup B_i)$ 因为<br>$P(A \cup B) = P(A) + P(B) - P(AB)$<br>且$B_iB_j=\varnothing $</p>
