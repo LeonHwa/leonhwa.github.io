@@ -167,7 +167,7 @@ P(X=x|Y=c_k) = P(X^{(1)} = x^{(1)},..,X^{(n)}=x^{(n)}|Y=c_k)   =  \prod_{j = 1}^
 <script type="math/tex; mode=display">
 P(Y=c_k|X=x)  = \frac{P(X=x|Y=c_k)P(Y=c_k)}{\sum_k P(X=x|Y=c_k)P(Y=c_k)}</script><p>把公式3带，得</p>
 <script type="math/tex; mode=display">
-P(Y=c_k|X=x) = \frac{P(Y=c_k)\prod_jP(X^{(j)}=x^{(j)})|P(Y=c_k)}{\sum_kP(Y=c_k)\prod_jP(X^{(j)}=x^{(j)}|Y=c_k)} \quad k=1,2,...K  \quad (9)</script><p>式9中分母对所有的<script type="math/tex">c_k</script>都相同，对所有类别来说都是常数，式9的最大化就是分子的最大化</p>
+P(Y=c_k|X=x) = \frac{P(Y=c_k)\prod_jP(X^{(j)}=x^{(j)})|P(Y=c_k)}{\sum_kP(Y=c_k)\prod_jP(X^{(j)}=x^{(j)}|Y=c_k)} \quad k=1,2,...K  \quad (9)</script><p>式9中分母对所有的<code>$c_k$</code>都相同，对所有类别来说都是常数，式9的最大化就是分子的最大化</p>
 <script type="math/tex; mode=display">
 arg \max_{c_k} P(Y=c_k)\prod_jP(X^{(j)}=x^{(j)})|P(Y=c_k)   \quad (10)</script><h5 id="例子-1"><a href="#例子-1" class="headerlink" title="例子"></a>例子</h5><p>$X^{(1)},X^{(2)}$为特征，取值的集合为$A_1 = \{1,2,3\}, A_2 = \{S,M,L\}$, $Y$为类标记，$Y\in  C = \{1,-1\}$,试用朴素贝叶斯分类器确定$x = \{2,S\}^{T}$的类标记$y$</p>
 <div class="table-container">
@@ -354,7 +354,7 @@ arg \max_{c_k} P(Y=c_k)\prod_jP(X^{(j)}=x^{(j)})|P(Y=c_k)   \quad (10)</script><
             all[i].SourceElement().parentNode.className += ' has-jax';
     });
 </script>
-<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 </body>
 </html>
 <!-- styles -->
