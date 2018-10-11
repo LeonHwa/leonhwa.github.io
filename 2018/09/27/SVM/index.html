@@ -6,17 +6,18 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="HandheldFriendly" content="True">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-    <meta name="description" content="SVM基本模型问题">
+    <meta name="description" content="SVM基本模型问题\min_{\omega,\gamma}\frac{1}{2}{\left \|  \omega \right \|}^2s.t.\quad  y_i(\omega^Tx_i + \gamma)\geq 1, i = 1,2,...,m转为拉格朗日函数：L(\omega,\gamma,\alpha) = \frac{ \left \|  \omega\right \|^2}{2}">
+<meta name="keywords" content="ML">
 <meta property="og:type" content="article">
 <meta property="og:title" content="SVM">
 <meta property="og:url" content="http://yoursite.com/2018/09/27/SVM/index.html">
 <meta property="og:site_name" content="rivendell">
-<meta property="og:description" content="SVM基本模型问题">
+<meta property="og:description" content="SVM基本模型问题\min_{\omega,\gamma}\frac{1}{2}{\left \|  \omega \right \|}^2s.t.\quad  y_i(\omega^Tx_i + \gamma)\geq 1, i = 1,2,...,m转为拉格朗日函数：L(\omega,\gamma,\alpha) = \frac{ \left \|  \omega\right \|^2}{2}">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-09-27T02:24:37.727Z">
+<meta property="og:updated_time" content="2018-10-11T06:07:27.300Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="SVM">
-<meta name="twitter:description" content="SVM基本模型问题">
+<meta name="twitter:description" content="SVM基本模型问题\min_{\omega,\gamma}\frac{1}{2}{\left \|  \omega \right \|}^2s.t.\quad  y_i(\omega^Tx_i + \gamma)\geq 1, i = 1,2,...,m转为拉格朗日函数：L(\omega,\gamma,\alpha) = \frac{ \left \|  \omega\right \|^2}{2}">
     
     
         
@@ -99,7 +100,7 @@
 
     </div>
     <div id="toc">
-      <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#SVM基本模型问题"><span class="toc-number">1.</span> <span class="toc-text">SVM基本模型问题</span></a></li></ol>
+      <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#SVM基本模型问题"><span class="toc-number">1.</span> <span class="toc-text">SVM基本模型问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#转为拉格朗日函数："><span class="toc-number">2.</span> <span class="toc-text">转为拉格朗日函数：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#拉格朗日对偶："><span class="toc-number">3.</span> <span class="toc-text">拉格朗日对偶：</span></a></li></ol>
     </div>
   </span>
 </div>
@@ -127,13 +128,26 @@
 
 
       
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link" href="/tags/ML/">ML</a>
+    </div>
+
 
     </div>
   </header>
   
 
   <div class="content" itemprop="articleBody">
-    <h4 id="SVM基本模型问题"><a href="#SVM基本模型问题" class="headerlink" title="SVM基本模型问题"></a>SVM基本模型问题</h4>
+    <h3 id="SVM基本模型问题"><a href="#SVM基本模型问题" class="headerlink" title="SVM基本模型问题"></a>SVM基本模型问题</h3><script type="math/tex; mode=display">\min_{\omega,\gamma}\frac{1}{2}{\left \|  \omega \right \|}^2</script><script type="math/tex; mode=display">s.t.\quad  y_i(\omega^Tx_i + \gamma)\geq 1, i = 1,2,...,m</script><h3 id="转为拉格朗日函数："><a href="#转为拉格朗日函数：" class="headerlink" title="转为拉格朗日函数："></a>转为拉格朗日函数：</h3><script type="math/tex; mode=display">L(\omega,\gamma,\alpha) = \frac{ \left \|  \omega\right \|^2}{2} + \sum_{i=1}^{m}\alpha_i(1-y_i(\omega^Tx_i+\gamma)) \quad (1)</script><h3 id="拉格朗日对偶："><a href="#拉格朗日对偶：" class="headerlink" title="拉格朗日对偶："></a>拉格朗日对偶：</h3><p>原始问题：</p>
+<script type="math/tex; mode=display">\min_{\omega,\gamma} \left [  {\max_{\alpha:\alpha_j\geq0}L(\omega,\gamma,\alpha)}   \right ]  \quad (2)</script><p>对偶问题：</p>
+<script type="math/tex; mode=display">\max_{\alpha:\alpha_j\geq0} \left [  {\min_{\omega,\gamma}L(\omega,\gamma,\alpha)}   \right ]  \quad (3)</script><p>通过对偶问题解决原始问题：</p>
+<script type="math/tex; mode=display">\min_{\omega,\gamma}L(\omega,\gamma,\alpha) = \min \left [    {\frac{\left \|  \omega\right \|^2}{2} + \sum_{i=1}^{m}\alpha_i(1-y_i(\omega^Tx_i+\gamma))}   \right ]  \quad (4)</script><p><strong>对$\omega,\gamma$求导:</strong></p>
+<script type="math/tex; mode=display">\frac{\partial L}{\partial \omega} = 0 \Rightarrow \omega = \sum_{i = 1}^{m}\alpha_iy_ix_i  \quad (5)</script><script type="math/tex; mode=display">\frac{\partial L}{\partial y} = 0 \Rightarrow 0 = \sum_{i = 1}^{m}\alpha_iy_i  \quad (6)</script><p>将公式5带入公式4中（注意模的平方公式）：</p>
+<script type="math/tex; mode=display">\min_{\omega,\gamma}L(\omega,\gamma,\alpha) = \frac{1}{2}\left [  \sum_{i = 1}^{m}\alpha_iy_ix_i\right ]^T \left [  \sum_{i = 1}^{m}\alpha_iy_ix_i\right ] + \sum_{i = 1}^m\alpha_i- \sum_{i=1}^m\sum_{j=1}^m\alpha_i \alpha_j y_i y_j x_i^T x_j  \quad (7)</script><p>加号左边的公式转换为：</p>
+<script type="math/tex; mode=display">\left [  \sum_{i = 1}^{m}\alpha_iy_ix_i\right ]^T \left [  \sum_{i = 1}^{m}\alpha_iy_ix_i\right ] =   \sum_{i=1}^m\sum_{j=1}^m\alpha_i \alpha_j y_i y_j x_i^T x_j</script><p>最后公式7转化为</p>
+<script type="math/tex; mode=display">\min_{\omega,\gamma}L(\omega,\gamma,\alpha) = \sum_{i = 1}^m\alpha_i- \frac{1}{2} \sum_{i=1}^m\sum_{j=1}^m\alpha_i \alpha_j y_i y_j x_i^T x_j  \quad (8)</script><p><strong>最后得出对偶问题：</strong></p>
+<script type="math/tex; mode=display">\max_a \left [  \sum_{i = 1}^m\alpha_i- \frac{1}{2} \sum_{i=1}^m\sum_{j=1}^m\alpha_i \alpha_j y_i y_j x_i^T x_j \right ]</script><script type="math/tex; mode=display">s.t. \sum_{i = 1}^{m}\alpha_iy_i = 0</script><script type="math/tex; mode=display">a_i \geq 1, i = 1,2,...,m</script>
   </div>
 </article>
 
@@ -165,7 +179,7 @@
     </div>
 
     <div id="toc-footer" style="display: none">
-      <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#SVM基本模型问题"><span class="toc-number">1.</span> <span class="toc-text">SVM基本模型问题</span></a></li></ol>
+      <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#SVM基本模型问题"><span class="toc-number">1.</span> <span class="toc-text">SVM基本模型问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#转为拉格朗日函数："><span class="toc-number">2.</span> <span class="toc-text">转为拉格朗日函数：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#拉格朗日对偶："><span class="toc-number">3.</span> <span class="toc-text">拉格朗日对偶：</span></a></li></ol>
     </div>
 
     <div id="share-footer" style="display: none">
