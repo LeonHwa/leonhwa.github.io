@@ -14,7 +14,7 @@
 <meta property="og:site_name" content="rivendell">
 <meta property="og:description" content="公式学习和证明全概率公式 $B_1, B_2,…, B_i$是事件$E$的样本空间$\Omega$ 的划分，$A$为$E$的事件，则   P(A) = \sum_{i=1}^n P(B_i)P(A|B_i)  \quad (1)称为全概率公式 证明：$A = A\Omega  = A(B_1\cup B_2\cup …\cup B_i)$ 因为$P(A \cup B) = P(A) + P(B)">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-10-10T08:49:57.730Z">
+<meta property="og:updated_time" content="2018-10-11T03:29:28.045Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="NaiveBayes">
 <meta name="twitter:description" content="公式学习和证明全概率公式 $B_1, B_2,…, B_i$是事件$E$的样本空间$\Omega$ 的划分，$A$为$E$的事件，则   P(A) = \sum_{i=1}^n P(B_i)P(A|B_i)  \quad (1)称为全概率公式 证明：$A = A\Omega  = A(B_1\cup B_2\cup …\cup B_i)$ 因为$P(A \cup B) = P(A) + P(B)">
@@ -167,7 +167,7 @@ P(X=x|Y=c_k) = P(X^{(1)} = x^{(1)},..,X^{(n)}=x^{(n)}|Y=c_k)   =  \prod_{j = 1}^
 <script type="math/tex; mode=display">
 P(Y=c_k|X=x)  = \frac{P(X=x|Y=c_k)P(Y=c_k)}{\sum_k P(X=x|Y=c_k)P(Y=c_k)}</script><p>把公式3带，得</p>
 <script type="math/tex; mode=display">
-P(Y=c_k|X=x) = \frac{P(Y=c_k)\prod_jP(X^{(j)}=x^{(j)})|P(Y=c_k)}{\sum_kP(Y=c_k)\prod_jP(X^{(j)}=x^{(j)}|Y=c_k)} \quad k=1,2,...K  \quad (9)</script><p>式9中分母对所有的<code>$c_k$</code>都相同，对所有类别来说都是常数，式9的最大化就是分子的最大化</p>
+P(Y=c_k|X=x) = \frac{P(Y=c_k)\prod_jP(X^{(j)}=x^{(j)})|P(Y=c_k)}{\sum_kP(Y=c_k)\prod_jP(X^{(j)}=x^{(j)}|Y=c_k)} \quad k=1,2,...K  \quad (9)</script><p>式9中分母对所有的$c_k$都相同，对所有类别来说都是常数，式9的最大化就是分子的最大化</p>
 <script type="math/tex; mode=display">
 arg \max_{c_k} P(Y=c_k)\prod_jP(X^{(j)}=x^{(j)})|P(Y=c_k)   \quad (10)</script><h5 id="例子-1"><a href="#例子-1" class="headerlink" title="例子"></a>例子</h5><p>$X^{(1)},X^{(2)}$为特征，取值的集合为$A_1 = \{1,2,3\}, A_2 = \{S,M,L\}$, $Y$为类标记，$Y\in  C = \{1,-1\}$,试用朴素贝叶斯分类器确定$x = \{2,S\}^{T}$的类标记$y$</p>
 <div class="table-container">
