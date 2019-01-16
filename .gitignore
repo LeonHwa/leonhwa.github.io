@@ -1,0 +1,5 @@
+.DS_Store
+*.log
+.deploy*/
+public/
+db.json
