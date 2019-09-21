@@ -85,7 +85,7 @@ math:
 ## Docs: https://hexo.io/docs/deployment.html
 deploy:
   type: git
-  repo: https://github.com/LeonHwa/leonhwa.github.io
+  repo: https://github.com/d2rivendell/d2rivendell.github.io
   branch: master
 
 
