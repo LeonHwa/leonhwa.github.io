@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="description" content="公式解析SVMSVM基本模型问题\min_{\omega,b}\frac{1}{2}{\left \|  \omega \right \|}^2,  \quad (1)s.t.\quad  y_i(\omega^Tx_i + b)\geq 1, \quad i = 1,2,...,m   \quad (2)转为拉格朗日函数L(\omega,b,\alpha) = \frac{\left \|  \">
+<meta name="keywords" content="ML">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SVM">
+<meta property="og:url" content="http://d2rivendell.github.io/2018/09/27/SVM/index.html">
+<meta property="og:site_name" content="rivendell">
+<meta property="og:description" content="公式解析SVMSVM基本模型问题\min_{\omega,b}\frac{1}{2}{\left \|  \omega \right \|}^2,  \quad (1)s.t.\quad  y_i(\omega^Tx_i + b)\geq 1, \quad i = 1,2,...,m   \quad (2)转为拉格朗日函数L(\omega,b,\alpha) = \frac{\left \|  \">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://d2rivendell.github.io/images/smo_1.jpg">
+<meta property="og:updated_time" content="2020-10-23T09:07:38.913Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="SVM">
+<meta name="twitter:description" content="公式解析SVMSVM基本模型问题\min_{\omega,b}\frac{1}{2}{\left \|  \omega \right \|}^2,  \quad (1)s.t.\quad  y_i(\omega^Tx_i + b)\geq 1, \quad i = 1,2,...,m   \quad (2)转为拉格朗日函数L(\omega,b,\alpha) = \frac{\left \|  \">
+<meta name="twitter:image" content="http://d2rivendell.github.io/images/smo_1.jpg">
+    
+    
+        
+          
+              <link rel="shortcut icon" href="/images/favicon.ico">
+          
+        
+        
+          
+            <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+          
+        
+        
+          
+            <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+          
+        
+    
+    <!-- title -->
+    <title>SVM</title>
+    <!-- styles -->
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- persian styles -->
+    
+      <link rel="stylesheet" href="/css/rtl.css">
+    
+    <!-- rss --><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+    
+    
+</head>
+
+<body class="max-width mx-auto px3 ltl">    
+      <!-- hexo-inject:begin --><!-- hexo-inject:end --><div id="header-post">
+  <a id="menu-icon" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about">About</a></li>
+         
+          <li><a href="/archives">Writing</a></li>
+         
+          <li><a href="/tags">tags</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" href="/2018/09/27/NaiveBayes/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://d2rivendell.github.io/2018/09/27/SVM/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://d2rivendell.github.io/2018/09/27/SVM/&text=SVM"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://d2rivendell.github.io/2018/09/27/SVM/&title=SVM"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://d2rivendell.github.io/2018/09/27/SVM/&is_video=false&description=SVM"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=SVM&body=Check out this article: http://d2rivendell.github.io/2018/09/27/SVM/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://d2rivendell.github.io/2018/09/27/SVM/&title=SVM"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://d2rivendell.github.io/2018/09/27/SVM/&title=SVM"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://d2rivendell.github.io/2018/09/27/SVM/&title=SVM"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://d2rivendell.github.io/2018/09/27/SVM/&title=SVM"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://d2rivendell.github.io/2018/09/27/SVM/&name=SVM&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#公式解析"><span class="toc-number">1.</span> <span class="toc-text">公式解析</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#SVM"><span class="toc-number">1.1.</span> <span class="toc-text">SVM</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#SVM基本模型问题"><span class="toc-number">1.1.1.</span> <span class="toc-text">SVM基本模型问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#转为拉格朗日函数"><span class="toc-number">1.1.2.</span> <span class="toc-text">转为拉格朗日函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#拉格朗日对偶"><span class="toc-number">1.1.3.</span> <span class="toc-text">拉格朗日对偶</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#对偶问题"><span class="toc-number">1.1.3.1.</span> <span class="toc-text">对偶问题</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#引入松弛变量-软间隔最大化"><span class="toc-number">1.1.4.</span> <span class="toc-text">引入松弛变量(软间隔最大化)</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#条件分析"><span class="toc-number">1.1.4.0.1.</span> <span class="toc-text">条件分析</span></a></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SMO"><span class="toc-number">1.2.</span> <span class="toc-text">SMO</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#两个变量的二次规划求解"><span class="toc-number">1.2.0.1.</span> <span class="toc-text">两个变量的二次规划求解</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#alpha-2-的上下界分析"><span class="toc-number">1.2.0.2.</span> <span class="toc-text">$\alpha_2$的上下界分析</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#y-1-neq-y-2-时"><span class="toc-number">1.2.0.2.1.</span> <span class="toc-text">$y_1 \neq  y_2$ 时</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#y-1-y-2-时"><span class="toc-number">1.2.0.2.2.</span> <span class="toc-text">$y_1=  y_2$ 时</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#alpha-1-和-alpha-2-的求解"><span class="toc-number">1.2.0.3.</span> <span class="toc-text">$\alpha_1$和$\alpha_2$的求解</span></a></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#代码解析"><span class="toc-number">2.</span> <span class="toc-text">代码解析</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#smo函数"><span class="toc-number">2.0.0.1.</span> <span class="toc-text">smo函数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#innerL-函数"><span class="toc-number">2.0.0.2.</span> <span class="toc-text">innerL 函数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#第一个a"><span class="toc-number">2.0.0.3.</span> <span class="toc-text">第一个a</span></a></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#参考资料"><span class="toc-number">3.</span> <span class="toc-text">参考资料</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index my4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        SVM
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">rivendell</span>
+      </span>
+      
+    <div class="postdate">
+        <time datetime="2018-09-27T02:23:10.000Z" itemprop="datePublished">2018-09-27</time>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link" href="/tags/ML/">ML</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h1 id="公式解析"><a href="#公式解析" class="headerlink" title="公式解析"></a>公式解析</h1><h2 id="SVM"><a href="#SVM" class="headerlink" title="SVM"></a>SVM</h2><h3 id="SVM基本模型问题"><a href="#SVM基本模型问题" class="headerlink" title="SVM基本模型问题"></a>SVM基本模型问题</h3><script type="math/tex; mode=display">\min_{\omega,b}\frac{1}{2}{\left \|  \omega \right \|}^2,  \quad (1)</script><script type="math/tex; mode=display">s.t.\quad  y_i(\omega^Tx_i + b)\geq 1, \quad i = 1,2,...,m   \quad (2)</script><h3 id="转为拉格朗日函数"><a href="#转为拉格朗日函数" class="headerlink" title="转为拉格朗日函数"></a>转为拉格朗日函数</h3><script type="math/tex; mode=display">L(\omega,b,\alpha) = \frac{\left \|  \omega\right \|^2}{2} + \sum_{i=1}^{m}\alpha_i(1-y_i(\omega^Tx_i+b)) \quad (3)</script><p>$\alpha=(\alpha_1,\alpha_2,…,\alpha_m)^T$为拉格朗日乘子向量$\alpha_i \geq 0$</p>
+<h3 id="拉格朗日对偶"><a href="#拉格朗日对偶" class="headerlink" title="拉格朗日对偶"></a>拉格朗日对偶</h3><p>原始问题：</p>
+<script type="math/tex; mode=display">\min_{\omega,b} \left [  {\max_{\alpha:\alpha_j\geq0}L(\omega,b,\alpha)}   \right ]  \quad (4)</script><p>对偶问题：</p>
+<script type="math/tex; mode=display">\max_{\alpha:\alpha_j\geq0} \left [  {\min_{\omega,b}L(\omega,b,\alpha)}   \right ]  \quad (5)</script><p>通过对偶问题解决原始问题：</p>
+<script type="math/tex; mode=display">\min_{\omega,b}L(\omega,b,\alpha) = \min \left [    {\frac{\left \|  \omega\right \|^2}{2} + \sum_{i=1}^{m}\alpha_i(1-y_i(\omega^Tx_i+b))}   \right ]  \quad (6)</script><p><strong>对$\omega,b$求导:</strong></p>
+<script type="math/tex; mode=display">\frac{\partial L}{\partial \omega} = 0 \Rightarrow \omega = \sum_{i = 1}^{m}\alpha_iy_ix_i  \quad (7)</script><script type="math/tex; mode=display">\frac{\partial L}{\partial y} = 0 \Rightarrow 0 = \sum_{i = 1}^{m}\alpha_iy_i  \quad (8)</script><p>将公式7带入公式6中（注意模的平方公式）：</p>
+<script type="math/tex; mode=display">\min_{\omega,b}L(\omega,b,\alpha) = \frac{1}{2}\left [  \sum_{i = 1}^{m}\alpha_iy_ix_i\right ]^T \left [  \sum_{i = 1}^{m}\alpha_iy_ix_i\right ] + \sum_{i = 1}^m\alpha_i- \sum_{i=1}^m\sum_{j=1}^m\alpha_i \alpha_j y_i y_j x_i^T x_j  \quad (9)</script><p>加号左边的公式转换为：</p>
+<script type="math/tex; mode=display">\left [  \sum_{i = 1}^{m}\alpha_iy_ix_i\right ]^T \left [  \sum_{i = 1}^{m}\alpha_iy_ix_i\right ] =   \sum_{i=1}^m\sum_{j=1}^m\alpha_i \alpha_j y_i y_j x_i^T x_j \quad (10)</script><p>最后公式9转化为</p>
+<script type="math/tex; mode=display">\min_{\omega,b}L(\omega,b,\alpha) = \sum_{i = 1}^m\alpha_i- \frac{1}{2} \sum_{i=1}^m\sum_{j=1}^m\alpha_i \alpha_j y_i y_j x_i^T x_j  \quad (11)</script><p>最后得出：</p>
+<h4 id="对偶问题"><a href="#对偶问题" class="headerlink" title="对偶问题"></a>对偶问题</h4><script type="math/tex; mode=display">\max_a \left [  \sum_{i = 1}^m\alpha_i- \frac{1}{2} \sum_{i=1}^m\sum_{j=1}^m\alpha_i \alpha_j y_i y_j x_i^T x_j \right ]  \quad (12)</script><script type="math/tex; mode=display">s.t. \sum_{i = 1}^{m}\alpha_iy_i = 0,</script><script type="math/tex; mode=display">a_i \geq 0, i = 1,2,...,m</script><p>给上式加上负号 则由求最大值变为求最小值</p>
+<script type="math/tex; mode=display">\min_a \left [ \frac{1}{2} \sum_{i=1}^m\sum_{j=1}^m\alpha_i \alpha_j y_i y_j x_i^T x_j -\sum_{i = 1}^m\alpha_i\right ] \quad (13)</script><script type="math/tex; mode=display">s.t. \sum_{i = 1}^{m}\alpha_iy_i = 0,</script><script type="math/tex; mode=display">a_i \geq 0, i = 1,2,...,m</script><p>上式有不等式存在，需满足<strong>KKT</strong>条件</p>
+<script type="math/tex; mode=display">\left\{\begin{matrix}
+\alpha_i \geq 0 \\ 
+y_if(x_i)-1 \geq0 \\
+\alpha_i(y_if(x_i)-1 ) = 0
+\end{matrix}\right.     \quad (14)</script><p><strong>KKT条件的约束和原问题的约束区别是：</strong><br>原问题的约束是对可行解的约束，KKT的约束是对最优解的约束</p>
+<h3 id="引入松弛变量-软间隔最大化"><a href="#引入松弛变量-软间隔最大化" class="headerlink" title="引入松弛变量(软间隔最大化)"></a>引入松弛变量(软间隔最大化)</h3><p>对于线性不可分的训练数据不等式的约束并不能都成立，这时需要修改间隔最大化，使其成为软间隔最大化。线性不可分意味着某些样本点$(x_i,y_i)$不能满足间隔大于1的约束条件，这时可以引入一个松弛变量$\xi_i \geq 0 $,</p>
+<script type="math/tex; mode=display">y_i(\omega^T x_i+b) \geq1-\xi_i  \quad (15)</script><p>同时，对每个松弛变量$\xi_i$，支付一个代价$\xi_i$,目标函数有原来的$\frac{1}{2}{\left |  \omega \right |}^2$变成</p>
+<script type="math/tex; mode=display">\frac{1}{2}{\left \|  \omega \right \|}^2 + C\sum_{i=1}^m\xi_i \quad (16)</script><p> $C&gt;0$称为<font color="#007947" size="3">惩罚参数</font>,一般由应用决定，$C$值大时对误分类的惩罚增大，$C$值小时对误分类的惩罚减小，<br>线性不可分SVM的基本问题转化成如下：</p>
+<script type="math/tex; mode=display">\frac{1}{2}{\left \|  \omega \right \|}^2 + C\sum_{i=1}^m\xi_i , \quad (17)</script><script type="math/tex; mode=display">s.t.\quad  y_i(\omega^Tx_i + b)\geq 1- \xi_i, \quad i = 1,2,...,m   \quad (18)</script><script type="math/tex; mode=display">\xi_i \geq 0  \quad (19)</script><p>根据拉格朗日乘子法得出新公式：</p>
+<script type="math/tex; mode=display">L(\omega,b,\alpha,\xi,\mu) = \frac{\left \|  \omega\right \|^2}{2} + C\sum_{i=1}^m\xi_i -\sum_{i=1}^{m}\alpha_i(y_i(\omega^Tx_i+b)-1+ \xi_i) - \sum_{i = 1}^m\mu_i \xi_i \quad (20)</script><p>其中$\alpha_i \geq 0$  $\mu_i \geq 0$<br>求出$ L(\omega,b,\alpha,\xi,\mu) $对 $w$, $b$,$\xi$,的极小</p>
+<script type="math/tex; mode=display">\frac{\partial L(\omega,b,\alpha,\xi,\mu)}{\partial \omega} = w-\sum_{i=1}^m\alpha_iy_ix_i = 0</script><script type="math/tex; mode=display">\frac{\partial L(\omega,b,\alpha,\xi,\mu)}{\partial b} = -\sum_{i=1}^m\alpha_iy_i = 0</script><script type="math/tex; mode=display">\frac{\partial L(\omega,b,\alpha,\xi,\mu)}{
+\partial \xi} = C-\alpha_i -\mu_i = 0</script><p>得</p>
+<script type="math/tex; mode=display">w = \sum_{i=1}^m\alpha_iy_ix_i = 0  \quad (21)</script><script type="math/tex; mode=display">\sum_{i=1}^m\alpha_iy_i = 0  \quad (22)</script><script type="math/tex; mode=display">C-\alpha_i -\mu_i = 0  \quad (23)</script><p>将式（21）、（22）、（23）代入 式（20），得</p>
+<script type="math/tex; mode=display">\min_{w,b,\xi}L(\omega,b,\alpha,\xi,\mu)  = -\frac{1}{2} \sum_{i=1}^m\sum_{j=1}^m\alpha_i \alpha_j y_i y_j x_i^T x_j +\sum_{i = 1}^m\alpha_i \quad (24)</script><p>再对$\min_{w,b,\xi}L(\omega,b,\alpha,\xi,\mu) $ 求$\alpha$的极大，即得<strong>对偶问题</strong>：</p>
+<script type="math/tex; mode=display">\max_a \left [  \sum_{i = 1}^m\alpha_i- \frac{1}{2} \sum_{i=1}^m\sum_{j=1}^m\alpha_i \alpha_j y_i y_j x_i^T x_j \right ]  \quad (25) (和式12一样)</script><p>给上式加上负号 则由求最大值变为求最小值</p>
+<script type="math/tex; mode=display">\min_a \left [ \frac{1}{2} \sum_{i=1}^m\sum_{j=1}^m\alpha_i \alpha_j y_i y_j x_i^T x_j -\sum_{i = 1}^m\alpha_i\right ] \quad (26)(和式13一样)</script><script type="math/tex; mode=display">s.t. \sum_{i = 1}^{m}\alpha_iy_i = 0,</script><script type="math/tex; mode=display">C-\alpha_i -\mu_i = 0,  \quad (27)</script><script type="math/tex; mode=display">a_i \geq 0, \quad  i = 1,2,...,m \quad (28)</script><script type="math/tex; mode=display">\mu_i \geq 0, \quad  i = 1,2,...,m \quad (29)</script><p>由式(27),式(28)可得</p>
+<script type="math/tex; mode=display">0\leq \alpha \leq  C  \quad (30)</script><p>式(20)结合<strong>KKT</strong>条件得</p>
+<script type="math/tex; mode=display">\frac{\partial L(\omega,b,\alpha,\xi,\mu)}{\partial \omega} = w-\sum_{i=1}^m\alpha_iy_ix_i = 0,</script><script type="math/tex; mode=display">\frac{\partial L(\omega,b,\alpha,\xi,\mu)}{\partial b} = -\sum_{i=1}^m\alpha_iy_i = 0,</script><script type="math/tex; mode=display">\frac{\partial L(\omega,b,\alpha,\xi,\mu)}{
+\partial \xi} = C-\alpha_i -\mu_i = 0,</script><script type="math/tex; mode=display">\alpha_i(y_i(\omega^Tx_i+b)-1+ \xi_i) = 0,  \quad (31)</script><script type="math/tex; mode=display">\mu_i \xi_i = 0, \quad (32)</script><script type="math/tex; mode=display">y_i(\omega^Tx_i+b)-1 + \mu_i \geq 0, \quad (33)</script><script type="math/tex; mode=display">\xi_i \geq 0,\quad  i = 1,2,...,m</script><script type="math/tex; mode=display">\alpha_i \geq 0,\quad  i = 1,2,...,m</script><script type="math/tex; mode=display">\mu_i \geq 0, \quad  i = 1,2,...,m</script><h5 id="条件分析"><a href="#条件分析" class="headerlink" title="条件分析"></a>条件分析</h5><ul>
+<li>当$\xi_i &gt; 0$ 说明点在边界内</li>
+<li>当$\alpha = 0$时，$\mu = C$,因为$ \mu_i \xi_i  = 0$,所以$ \xi_i = 0$,由式(15)可知 ,$y_i(\omega^T x_i+b) \geq1 $,在超平面外。</li>
+<li>当$\alpha = C$时，$\mu = 0$,$ \xi_i  \geq 0$,由式(15)可知,$y_i(\omega^T x_i+b) &lt; 1 $,在超平面内。</li>
+<li>当$0 &lt; \alpha &lt; C$时，$\mu \neq  0$,$ \xi_i = 0$, 由式(15)可知,$y_i(\omega^T x_i+b) =1 $,是支持向量点。</li>
+</ul>
+<h2 id="SMO"><a href="#SMO" class="headerlink" title="SMO"></a>SMO</h2><p>上面公式的求解可形式化为求解凸二次规划问题，当训练样本很大时，序列最小最优化(sequential minimal optimization)算法可以比较快速地求解。根据上面的公式推导，<strong>SMO</strong>在此处需要解以下凸二次规划问题：</p>
+<script type="math/tex; mode=display">\min_a \left [ \frac{1}{2} \sum_{i=1}^m\sum_{j=1}^m\alpha_i \alpha_j y_i y_j K(x_i,x_j) -\sum_{i = 1}^m\alpha_i\right ] \quad (34)</script><script type="math/tex; mode=display">s.t. \quad \sum_{i = 1}^{m}\alpha_iy_i = 0, \quad (35)</script><script type="math/tex; mode=display">0\leq \alpha_i \leq  C ,\quad  i = 1,2,...,m  \quad (36)</script><p>$K$函数为核函数</p>
+<p><strong>SMO</strong>算法基本思路：如果所有变量都满足此最优化问题的<strong>KKT</strong>条件，那么这个问题的最优化的解就得到了。因为<strong>KKT</strong>条件是该优化问题的充分必要条件。否则，选择两个变量，固定其他变量，针对这两个变量构建一个二次规划问题，这个二次规划问题关于这两个变量的解应该更接近原始二次规划问题的解，因为这会使得原始二次规划问题的目标函数值变得更小。重要的是，这时子问题可以通过解析方法求解，这样就可以大大提高整个算法的计算速度。子问题有两个变量，一个是违反<strong>KKT</strong>条件最严重的那一个，另一个由约束问题自动确定。如此，<strong>SMO</strong>算法将原问题不断分解为子问题并对子问题求解，进而达到求解原问题的目的。</p>
+<p>由式（35）可知</p>
+<script type="math/tex; mode=display">a_1 = -y_1 \sum_{i = 2}^m \alpha_i y_i</script><p>如果$a_2$确定,那么$a_1$也随之确定</p>
+<h4 id="两个变量的二次规划求解"><a href="#两个变量的二次规划求解" class="headerlink" title="两个变量的二次规划求解"></a>两个变量的二次规划求解</h4><p>不失一般性，假设选择的两个变量是$\alpha_1,\alpha_2$ ，其他变量是固定的， <strong>SMO</strong>的最优化问题（34）～（36）的子问题可以写成</p>
+<script type="math/tex; mode=display">
+\begin{eqnarray*} 
+\min_{\alpha_1, \alpha2}  \quad W(\alpha_1,\alpha_2) &=  \frac{1}{2}K_{11} \alpha^2 + \frac{1}{2}K_{22} \alpha^2  + y_1 y_2 K_{12} \alpha_1 \alpha_2 \\
+  & -(\alpha_1 + \alpha_2)+y_1 \alpha_1 \sum_{i = 3}^m y_i \alpha_iK_{i1}+y_2 \alpha_2 \sum_{i = 3}^m y_i \alpha_iK_{i2}  
+\end{eqnarray*} \quad (37)</script><script type="math/tex; mode=display">s.t. \quad \alpha_1y_1 + \alpha_2 y_2  = - \sum_{i = 3}^m y_i \alpha_i = \zeta  \quad (38)</script><script type="math/tex; mode=display">0\leq \alpha_i \leq  C ,\quad  i = 1,2  \quad (39)</script><h4 id="alpha-2-的上下界分析"><a href="#alpha-2-的上下界分析" class="headerlink" title="$\alpha_2$的上下界分析"></a>$\alpha_2$的上下界分析</h4><p>式（37）～（39）两个变量$(\alpha_1,\alpha_2)$可以用下图的二维空间图像表示</p>
+<p><img src="/images/smo_1.jpg" alt="图1.0 二变量优化问题图示"></p>
+<p>$(\alpha_1,\alpha_2)$的取值在盒子$[0,C] \times [0,C]$内，式（38）使得$(\alpha_1,\alpha_2)$在平行与盒子$[0,C] \times [0,C]$的对角线上，有$y_1 = y_2$和$y_1 \neq  y_2$两种情况。假设问题（37）～（39）的初始可行解为$\alpha_1^{old},\alpha_2^{old}$,最优解为$\alpha_1^{new},\alpha_2^{new}$,沿着约束方向未经剪辑时$\alpha_2$的最优解为$\alpha_2^{new,unc}$。</p>
+<h5 id="y-1-neq-y-2-时"><a href="#y-1-neq-y-2-时" class="headerlink" title="$y_1 \neq  y_2$ 时"></a>$y_1 \neq  y_2$ 时</h5><p>记$\alpha_2$的下界和上届分别为$L,U$，根据图像可知$L$在$L_1$或$L_2$取到， $H$在$H_1$或$H_2$取到。 在$L_2$处$\alpha_2 = 0$，在$L_1$处</p>
+<script type="math/tex; mode=display">0 - \alpha_2 = \gamma   \quad (40)</script><p>因为$y_1 \neq  y_2$ ，有</p>
+<script type="math/tex; mode=display">\alpha_1^{old} - \alpha_2^{old} = \gamma   \quad (41)</script><p>上面两式消去$\gamma$得$\alpha_2 = \alpha_2^{old} - \alpha_1^{old}$。由此，当$y_1 \neq  y_2$时，$\alpha_2$的下界可以表示为</p>
+<script type="math/tex; mode=display">\left\{\begin{matrix}
+0,   \quad \gamma > 0 \\ 
+\alpha_1^{old} - \alpha_2^{old} , \quad  \gamma < 0 \\
+\end{matrix}\right.     \quad (42)</script><p>可以看到$\alpha_2$的下界实际是由$ \alpha_2^{old} - \alpha_1^{old}$和0的大小来决定的，因此上式可重写为</p>
+<script type="math/tex; mode=display">L  = \max \{0,\alpha_2^{old} - \alpha_1^{old} \} \quad(43)</script><p>按照上面的推倒可以得出$\alpha_2$的上界</p>
+<script type="math/tex; mode=display">H  = \max \{C, C - \alpha_1^{old} + \alpha_2^{old} \} \quad(44)</script><h5 id="y-1-y-2-时"><a href="#y-1-y-2-时" class="headerlink" title="$y_1=  y_2$ 时"></a>$y_1=  y_2$ 时</h5><p>根据上面推倒可以得到类似的下界和上界分别为</p>
+<script type="math/tex; mode=display">L  = \max \{0,\alpha_2^{old} + \alpha_1^{old} - C\}  \quad(45)</script><script type="math/tex; mode=display">H  = \max \{C,\alpha_2^{old} + \alpha_1^{old} \}  \quad(46)</script><h4 id="alpha-1-和-alpha-2-的求解"><a href="#alpha-1-和-alpha-2-的求解" class="headerlink" title="$\alpha_1$和$\alpha_2$的求解"></a>$\alpha_1$和$\alpha_2$的求解</h4><p>为了叙述简单定义如下</p>
+<script type="math/tex; mode=display">g(x) = \sum_{i = 1}^{m}\alpha_i y_i K(x_i,x) + b \quad (47)</script><script type="math/tex; mode=display">E_i =g(x_i) - y_i =   \left [ \sum_{j = 1}^{m}\alpha_j y_j K(x_j,x) + b  \right ] - y_i , \quad i = 1,2  \quad (48)</script><blockquote>
+<p>定理：最优化问题（37）～（39）沿着约束方向未经剪辑时的解是</p>
+<script type="math/tex; mode=display">\alpha_2^{new,unc} = \alpha_2^{old} + \frac{y_2 (E_1 - E_2) }{\eta}</script><p>其中，$\eta = K<em>{11} + K</em>{22} - 2K_{12} = {\left | \Phi(x_1) - \Phi(x_2) \right |}^2$</p>
+<p>$\Phi(x)$是输入空间到特征空间的映射</p>
+<p>经剪辑后的$\alpha_2$的解是</p>
+<script type="math/tex; mode=display">\left\{\begin{matrix}
+H,   \quad \alpha_2^{new,unc} > H\\ 
+\alpha_2^{new,unc},  \quad    L \leq     \alpha_2^{new,unc}  \leq   H \\
+
+L,  \quad  \alpha_2^{new,unc} < L \\
+
+\end{matrix}\right.     \quad (42)</script><p>由$\alpha_2^{new}$求得$\alpha_1^{new}$</p>
+<script type="math/tex; mode=display">\alpha_1^{new} = \alpha_1^{old} + y_1 y_2 (\alpha_2^{old } - \alpha_2^{new})</script></blockquote>
+<p>证明略</p>
+<h1 id="代码解析"><a href="#代码解析" class="headerlink" title="代码解析"></a>代码解析</h1><h4 id="smo函数"><a href="#smo函数" class="headerlink" title="smo函数"></a>smo函数</h4><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">smoP</span><span class="params">(dataMatIn, classLabels, C, toler, maxIter)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    完整SMO算法外循环，与smoSimple有些类似，但这里的循环退出条件更多一些</span></span><br><span class="line"><span class="string">    Args:</span></span><br><span class="line"><span class="string">        dataMatIn    数据集</span></span><br><span class="line"><span class="string">        classLabels  类别标签</span></span><br><span class="line"><span class="string">        C   松弛变量(常量值)，允许有些数据点可以处于分隔面的错误一侧。</span></span><br><span class="line"><span class="string">            控制最大化间隔和保证大部分的函数间隔小于1.0这两个目标的权重。</span></span><br><span class="line"><span class="string">            可以通过调节该参数达到不同的结果。</span></span><br><span class="line"><span class="string">        toler   容错率</span></span><br><span class="line"><span class="string">        maxIter 退出前最大的循环次数</span></span><br><span class="line"><span class="string">    Returns:</span></span><br><span class="line"><span class="string">        b       模型的常量值</span></span><br><span class="line"><span class="string">        alphas  拉格朗日乘子</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 创建一个 optStruct 对象</span></span><br><span class="line">    oS = optStruct(mat(dataMatIn), mat(classLabels).transpose(), C, toler)</span><br><span class="line">    iter = <span class="number">0</span></span><br><span class="line">    entireSet = <span class="keyword">True</span></span><br><span class="line">    alphaPairsChanged = <span class="number">0</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 循环遍历：循环maxIter次 并且 （alphaPairsChanged存在可以改变 or 所有行遍历一遍）</span></span><br><span class="line">    <span class="comment"># 循环迭代结束 或者 循环遍历所有alpha后，alphaPairs还是没变化</span></span><br><span class="line">    <span class="keyword">while</span> (iter &lt; maxIter) <span class="keyword">and</span> ((alphaPairsChanged &gt; <span class="number">0</span>) <span class="keyword">or</span> (entireSet)):</span><br><span class="line">        alphaPairsChanged = <span class="number">0</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">#  当entireSet=true or 非边界alpha对没有了；就开始寻找 alpha对，然后决定是否要进行else。</span></span><br><span class="line">        <span class="keyword">if</span> entireSet:</span><br><span class="line">            <span class="comment"># 在数据集上遍历所有可能的alpha</span></span><br><span class="line">            <span class="keyword">for</span> i <span class="keyword">in</span> range(oS.m):</span><br><span class="line">                <span class="comment"># 是否存在alpha对，存在就+1</span></span><br><span class="line">                alphaPairsChanged += innerL(i, oS)</span><br><span class="line">                print(<span class="string">"fullSet, iter: %d i:%d, pairs changed %d"</span> % (iter, i, alphaPairsChanged))</span><br><span class="line">            iter += <span class="number">1</span></span><br><span class="line">        <span class="comment"># 对已存在 alpha对，选出非边界的alpha值，进行优化。</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="comment"># 遍历所有的非边界alpha值，也就是不在边界0或C上的值。</span></span><br><span class="line">            nonBoundIs = nonzero((oS.alphas.A &gt; <span class="number">0</span>) * (oS.alphas.A &lt; C))[<span class="number">0</span>]</span><br><span class="line">            <span class="keyword">for</span> i <span class="keyword">in</span> nonBoundIs:</span><br><span class="line">                alphaPairsChanged += innerL(i, oS)</span><br><span class="line">                print(<span class="string">"non-bound, iter: %d i:%d, pairs changed %d"</span> % (iter, i, alphaPairsChanged))</span><br><span class="line">            iter += <span class="number">1</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># 如果找到alpha对，就优化非边界alpha值，否则，就重新进行寻找，如果寻找一遍 遍历所有的行还是没找到，就退出循环。</span></span><br><span class="line">        <span class="keyword">if</span> entireSet:</span><br><span class="line">            entireSet = <span class="keyword">False</span>  <span class="comment"># toggle entire set loop</span></span><br><span class="line">        <span class="keyword">elif</span> (alphaPairsChanged == <span class="number">0</span>):</span><br><span class="line">            entireSet = <span class="keyword">True</span></span><br><span class="line">        print(<span class="string">"iteration number: %d"</span> % iter)</span><br><span class="line">    <span class="keyword">return</span> oS.b, oS.alphas</span><br></pre></td></tr></table></figure>
+<h4 id="innerL-函数"><a href="#innerL-函数" class="headerlink" title="innerL 函数"></a>innerL 函数</h4><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">innerL</span><span class="params">(i, oS)</span>:</span></span><br><span class="line">    <span class="string">"""innerL</span></span><br><span class="line"><span class="string">    内循环代码</span></span><br><span class="line"><span class="string">    Args:</span></span><br><span class="line"><span class="string">        i   具体的某一行</span></span><br><span class="line"><span class="string">        oS  optStruct对象</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    Returns:</span></span><br><span class="line"><span class="string">        0   找不到最优的值</span></span><br><span class="line"><span class="string">        1   找到了最优的值，并且oS.Cache到缓存中</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 求 Ek误差：预测值-真实值的差</span></span><br><span class="line">    Ei = calcEk(oS, i)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 约束条件 (KKT条件是解决最优化问题的时用到的一种方法。我们这里提到的最优化问题通常是指对于给定的某一函数，求其在指定作用域上的全局最小值)</span></span><br><span class="line">    <span class="comment"># 0&lt;=alphas[i]&lt;=C，但由于0和C是边界值，我们无法进行优化，因为需要增加一个alphas和降低一个alphas。</span></span><br><span class="line">    <span class="comment"># 表示发生错误的概率：labelMat[i]*Ei 如果超出了 toler， 才需要优化。至于正负号，我们考虑绝对值就对了。</span></span><br><span class="line">    <span class="string">'''</span></span><br><span class="line"><span class="string">    # 检验训练样本(xi, yi)是否满足KKT条件</span></span><br><span class="line"><span class="string">    yi*f(i) &gt;= 1 and alpha = 0 (outside the boundary)</span></span><br><span class="line"><span class="string">    yi*f(i) == 1 and 0&lt;alpha&lt; C (on the boundary)</span></span><br><span class="line"><span class="string">    yi*f(i) &lt;= 1 and alpha = C (between the boundary)</span></span><br><span class="line"><span class="string">    '''</span></span><br><span class="line">    <span class="keyword">if</span> ((oS.labelMat[i] * Ei &lt; -oS.tol) <span class="keyword">and</span> (oS.alphas[i] &lt; oS.C)) <span class="keyword">or</span> ((oS.labelMat[i] * Ei &gt; oS.tol) <span class="keyword">and</span> (oS.alphas[i] &gt; <span class="number">0</span>)):</span><br><span class="line">        <span class="comment"># 选择最大的误差对应的j进行优化。效果更明显</span></span><br><span class="line">        j, Ej = selectJ(i, oS, Ei)</span><br><span class="line">        alphaIold = oS.alphas[i].copy()</span><br><span class="line">        alphaJold = oS.alphas[j].copy()</span><br><span class="line"></span><br><span class="line">        <span class="comment"># L和H用于将alphas[j]调整到0-C之间。如果L==H，就不做任何改变，直接return 0</span></span><br><span class="line">        <span class="keyword">if</span> (oS.labelMat[i] != oS.labelMat[j]):</span><br><span class="line">            L = max(<span class="number">0</span>, oS.alphas[j] - oS.alphas[i])</span><br><span class="line">            H = min(oS.C, oS.C + oS.alphas[j] - oS.alphas[i])</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            L = max(<span class="number">0</span>, oS.alphas[j] + oS.alphas[i] - oS.C)</span><br><span class="line">            H = min(oS.C, oS.alphas[j] + oS.alphas[i])</span><br><span class="line">        <span class="keyword">if</span> L == H:</span><br><span class="line">            <span class="comment"># print("L==H")</span></span><br><span class="line">            <span class="keyword">return</span> <span class="number">0</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># eta是alphas[j]的最优修改量，如果eta==0，需要退出for循环的当前迭代过程</span></span><br><span class="line">        <span class="comment"># 参考《统计学习方法》李航-P125~P128&lt;序列最小最优化算法&gt;</span></span><br><span class="line">        eta = <span class="number">2.0</span> * oS.K[i, j] - oS.K[i, i] - oS.K[j, j]  <span class="comment"># changed for kernel</span></span><br><span class="line">        <span class="keyword">if</span> eta &gt;= <span class="number">0</span>:</span><br><span class="line">            print(<span class="string">"eta&gt;=0"</span>)</span><br><span class="line">            <span class="keyword">return</span> <span class="number">0</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># 计算出一个新的alphas[j]值</span></span><br><span class="line">        oS.alphas[j] -= oS.labelMat[j] * (Ei - Ej) / eta</span><br><span class="line">        <span class="comment"># 并使用辅助函数，以及L和H对其进行调整</span></span><br><span class="line">        oS.alphas[j] = clipAlpha(oS.alphas[j], H, L)</span><br><span class="line">        <span class="comment"># 更新误差缓存</span></span><br><span class="line">        updateEk(oS, j)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 检查alpha[j]是否只是轻微的改变，如果是的话，就退出for循环。</span></span><br><span class="line">        <span class="keyword">if</span> (abs(oS.alphas[j] - alphaJold) &lt; <span class="number">0.00001</span>):</span><br><span class="line">            <span class="comment"># print("j not moving enough")</span></span><br><span class="line">            <span class="keyword">return</span> <span class="number">0</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># 然后alphas[i]和alphas[j]同样进行改变，虽然改变的大小一样，但是改变的方向正好相反</span></span><br><span class="line">        oS.alphas[i] += oS.labelMat[j] * oS.labelMat[i] * (alphaJold - oS.alphas[j])</span><br><span class="line">        <span class="comment"># 更新误差缓存</span></span><br><span class="line">        updateEk(oS, i)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 在对alpha[i], alpha[j] 进行优化之后，给这两个alpha值设置一个常数b。</span></span><br><span class="line">        <span class="comment"># w= Σ[1~n] ai*yi*xi =&gt; b = yi- Σ[1~n] ai*yi(xi*xj)</span></span><br><span class="line">        <span class="comment"># 所以：  b1 - b = (y1-y) - Σ[1~n] yi*(a1-a)*(xi*x1)</span></span><br><span class="line">        <span class="comment"># 为什么减2遍？ 因为是 减去Σ[1~n]，正好2个变量i和j，所以减2遍</span></span><br><span class="line">        b1 = oS.b - Ei - oS.labelMat[i] * (oS.alphas[i] - alphaIold) * oS.K[i, i] - oS.labelMat[j] * (oS.alphas[j] - alphaJold) * oS.K[i, j]</span><br><span class="line">        b2 = oS.b - Ej - oS.labelMat[i] * (oS.alphas[i] - alphaIold) * oS.K[i, j] - oS.labelMat[j] * (oS.alphas[j] - alphaJold) * oS.K[j, j]</span><br><span class="line">        <span class="keyword">if</span> (<span class="number">0</span> &lt; oS.alphas[i]) <span class="keyword">and</span> (oS.C &gt; oS.alphas[i]):</span><br><span class="line">            oS.b = b1</span><br><span class="line">        <span class="keyword">elif</span> (<span class="number">0</span> &lt; oS.alphas[j]) <span class="keyword">and</span> (oS.C &gt; oS.alphas[j]):</span><br><span class="line">            oS.b = b2</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            oS.b = (b1 + b2) / <span class="number">2.0</span></span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span></span><br></pre></td></tr></table></figure>
+<h4 id="第一个a"><a href="#第一个a" class="headerlink" title="第一个a"></a>第一个a</h4><p>SMO称选择第一个变量的过程称为外循环。外循环在训练样本中选取违反KKT条件最严重的样本点，并将其对应的变量作为第一个变量$\alpha$，即$y_i g(x_i) - 1 &lt; 0$ (由式14得出)，因为定义了$E_i = g(x_i) - y_i$（式48），且$y_i^2 = 1, E_i y_i = y_i g(x_i) - 1$所违反KKT条件就是$E_i y_i &lt; 0$，找出满足这个条件的第一个$\alpha$</p>
+<p>在函数<code>inneL</code>中<br><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span> ((oS.labelMat[i] * Ei &lt; -oS.tol) <span class="keyword">and</span> (oS.alphas[i] &lt; oS.C)) <span class="keyword">or</span> ((oS.labelMat[i] * Ei &gt; oS.tol) <span class="keyword">and</span> (oS.alphas[i] &gt; <span class="number">0</span>)):</span><br></pre></td></tr></table></figure></p>
+<p><code>tol</code>是容忍因子（tol&gt;0）<br><strong>左边</strong>： $y_i  E_i &lt; -tol \Rightarrow y_i g(x_i)  -  1&lt; - tol \Rightarrow y_i g(x_i) &lt; 1 - tol &lt; 1$ ,这些点是落在超平面内且$\alpha$要满足$\alpha = C$，否则就违反KKT条件。但是我们就是要找出违反KKT条件的点 就是要找出这个条件，所以才有$\alpha &lt; C$ 这个“与”条件</p>
+<p><strong>右边</strong>： $y_i  E_i &gt; tol \Rightarrow y_i g(x_i)  -  1&lt;  tol \Rightarrow y_i g(x_i) &gt; 1 + tol &gt; 1$ ,这些点就表示落在超平面外,$\alpha$要满足$\alpha = 0$，但是违反KKT的条件就是$\alpha &gt; 0 $，所以才有$\alpha &gt; 0 $ 这个“与”条件</p>
+<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><p>[1]. 统计学习方法，李航</p>
+<p>[2]. 机器学习实战</p>
+<p>[3]. 机器学习，周志华</p>
+<p>[4]. <a href="https://zhuanlan.zhihu.com/p/24638007" target="_blank" rel="noopener">零基础学SVM—Support Vector Machine</a></p>
+
+  </div>
+</article>
+
+    <div class="blog-post-comments">
+        <div id="disqus_thread">
+            <noscript>Please enable JavaScript to view the comments.</noscript>
+        </div>
+    </div>
+
+
+
+    </div>
+    
+      <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about">About</a></li>
+         
+          <li><a href="/archives">Writing</a></li>
+         
+          <li><a href="/tags">tags</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#公式解析"><span class="toc-number">1.</span> <span class="toc-text">公式解析</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#SVM"><span class="toc-number">1.1.</span> <span class="toc-text">SVM</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#SVM基本模型问题"><span class="toc-number">1.1.1.</span> <span class="toc-text">SVM基本模型问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#转为拉格朗日函数"><span class="toc-number">1.1.2.</span> <span class="toc-text">转为拉格朗日函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#拉格朗日对偶"><span class="toc-number">1.1.3.</span> <span class="toc-text">拉格朗日对偶</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#对偶问题"><span class="toc-number">1.1.3.1.</span> <span class="toc-text">对偶问题</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#引入松弛变量-软间隔最大化"><span class="toc-number">1.1.4.</span> <span class="toc-text">引入松弛变量(软间隔最大化)</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#条件分析"><span class="toc-number">1.1.4.0.1.</span> <span class="toc-text">条件分析</span></a></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SMO"><span class="toc-number">1.2.</span> <span class="toc-text">SMO</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#两个变量的二次规划求解"><span class="toc-number">1.2.0.1.</span> <span class="toc-text">两个变量的二次规划求解</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#alpha-2-的上下界分析"><span class="toc-number">1.2.0.2.</span> <span class="toc-text">$\alpha_2$的上下界分析</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#y-1-neq-y-2-时"><span class="toc-number">1.2.0.2.1.</span> <span class="toc-text">$y_1 \neq  y_2$ 时</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#y-1-y-2-时"><span class="toc-number">1.2.0.2.2.</span> <span class="toc-text">$y_1=  y_2$ 时</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#alpha-1-和-alpha-2-的求解"><span class="toc-number">1.2.0.3.</span> <span class="toc-text">$\alpha_1$和$\alpha_2$的求解</span></a></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#代码解析"><span class="toc-number">2.</span> <span class="toc-text">代码解析</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#smo函数"><span class="toc-number">2.0.0.1.</span> <span class="toc-text">smo函数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#innerL-函数"><span class="toc-number">2.0.0.2.</span> <span class="toc-text">innerL 函数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#第一个a"><span class="toc-number">2.0.0.3.</span> <span class="toc-text">第一个a</span></a></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#参考资料"><span class="toc-number">3.</span> <span class="toc-text">参考资料</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://d2rivendell.github.io/2018/09/27/SVM/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://d2rivendell.github.io/2018/09/27/SVM/&text=SVM"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://d2rivendell.github.io/2018/09/27/SVM/&title=SVM"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://d2rivendell.github.io/2018/09/27/SVM/&is_video=false&description=SVM"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=SVM&body=Check out this article: http://d2rivendell.github.io/2018/09/27/SVM/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://d2rivendell.github.io/2018/09/27/SVM/&title=SVM"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://d2rivendell.github.io/2018/09/27/SVM/&title=SVM"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://d2rivendell.github.io/2018/09/27/SVM/&title=SVM"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://d2rivendell.github.io/2018/09/27/SVM/&title=SVM"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://d2rivendell.github.io/2018/09/27/SVM/&name=SVM&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+    
+    <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy; 2020 leon
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about">About</a></li>
+         
+          <li><a href="/archives">Writing</a></li>
+         
+          <li><a href="/tags">tags</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"log":false,"model":{"jsonPath":"/live2dw/assets/hijiki.model.json"},"display":{"position":"right","width":75,"height":150},"mobile":{"show":true}});</script></body>
+</html>
+<!-- styles -->
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+<link rel="stylesheet" href="/lib/justified-gallery/css/justifiedGallery.min.css">
+
+<!-- jquery -->
+<script src="/lib/jquery/jquery.min.js"></script>
+<script src="/lib/justified-gallery/js/jquery.justifiedGallery.min.js"></script>
+<script src="/js/main.js"></script>
+<!-- search -->
+
+<!-- Google Analytics -->
+
+    <script type="text/javascript">
+        (function(i,s,o,g,r,a,m) {i['GoogleAnalyticsObject']=r;i[r]=i[r]||function() {
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+        ga('create', 'UA-127325381-1', 'auto');
+        ga('send', 'pageview');
+    </script>
+
+<!-- Baidu Analytics -->
+
+<!-- Disqus Comments -->
+
+    <script type="text/javascript">
+        var disqus_shortname = 'leonhwa';
+
+        (function(){
+            var dsq = document.createElement('script');
+            dsq.type = 'text/javascript';
+            dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        }());
+    </script>
+
+

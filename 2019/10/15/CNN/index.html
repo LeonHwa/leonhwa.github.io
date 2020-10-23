@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="description" content="卷积层 （Convolutional Layer）正向传播相关概念：pad：图像边缘填充的像素宽度(用来调整输出矩阵大小)stride： 步长depth：图片通道数 假设input size 为W，filter Size 为F，stride为S， pad为P,  则输出size为$(W-F+2P)/S + 1$, 如果输出值不是整数，说明设置的超参数不对，需重新设置。  Convolution 和">
+<meta name="keywords" content="DL">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CNN">
+<meta property="og:url" content="http://d2rivendell.github.io/2019/10/15/CNN/index.html">
+<meta property="og:site_name" content="rivendell">
+<meta property="og:description" content="卷积层 （Convolutional Layer）正向传播相关概念：pad：图像边缘填充的像素宽度(用来调整输出矩阵大小)stride： 步长depth：图片通道数 假设input size 为W，filter Size 为F，stride为S， pad为P,  则输出size为$(W-F+2P)/S + 1$, 如果输出值不是整数，说明设置的超参数不对，需重新设置。  Convolution 和">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://d2rivendell.github.io/images/cnn_gif.gif">
+<meta property="og:image" content="http://d2rivendell.github.io/images/hFqwv.png">
+<meta property="og:image" content="http://d2rivendell.github.io/images/convolution-mlp-mapping.png">
+<meta property="og:image" content="http://d2rivendell.github.io/images/cnn_gradient_finger.png">
+<meta property="og:image" content="http://d2rivendell.github.io/images/img2col_(1">
+<meta property="og:image" content="http://d2rivendell.github.io/images/img2col_(2">
+<meta property="og:image" content="http://d2rivendell.github.io/images/CNNConV_1.png">
+<meta property="og:image" content="http://d2rivendell.github.io/images/反向传播填充dz.png">
+<meta property="og:updated_time" content="2020-10-23T09:07:38.912Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="CNN">
+<meta name="twitter:description" content="卷积层 （Convolutional Layer）正向传播相关概念：pad：图像边缘填充的像素宽度(用来调整输出矩阵大小)stride： 步长depth：图片通道数 假设input size 为W，filter Size 为F，stride为S， pad为P,  则输出size为$(W-F+2P)/S + 1$, 如果输出值不是整数，说明设置的超参数不对，需重新设置。  Convolution 和">
+<meta name="twitter:image" content="http://d2rivendell.github.io/images/cnn_gif.gif">
+    
+    
+        
+          
+              <link rel="shortcut icon" href="/images/favicon.ico">
+          
+        
+        
+          
+            <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+          
+        
+        
+          
+            <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+          
+        
+    
+    <!-- title -->
+    <title>CNN</title>
+    <!-- styles -->
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- persian styles -->
+    
+      <link rel="stylesheet" href="/css/rtl.css">
+    
+    <!-- rss --><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+    
+    
+</head>
+
+<body class="max-width mx-auto px3 ltl">    
+      <!-- hexo-inject:begin --><!-- hexo-inject:end --><div id="header-post">
+  <a id="menu-icon" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about">About</a></li>
+         
+          <li><a href="/archives">Writing</a></li>
+         
+          <li><a href="/tags">tags</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" href="/2019/10/15/BatchNormal/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" href="/2019/10/02/逻辑回归/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://d2rivendell.github.io/2019/10/15/CNN/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://d2rivendell.github.io/2019/10/15/CNN/&text=CNN"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://d2rivendell.github.io/2019/10/15/CNN/&title=CNN"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://d2rivendell.github.io/2019/10/15/CNN/&is_video=false&description=CNN"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=CNN&body=Check out this article: http://d2rivendell.github.io/2019/10/15/CNN/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://d2rivendell.github.io/2019/10/15/CNN/&title=CNN"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://d2rivendell.github.io/2019/10/15/CNN/&title=CNN"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://d2rivendell.github.io/2019/10/15/CNN/&title=CNN"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://d2rivendell.github.io/2019/10/15/CNN/&title=CNN"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://d2rivendell.github.io/2019/10/15/CNN/&name=CNN&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#卷积层-（Convolutional-Layer）"><span class="toc-number">1.</span> <span class="toc-text">卷积层 （Convolutional Layer）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#正向传播"><span class="toc-number">1.0.1.</span> <span class="toc-text">正向传播</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#相关概念："><span class="toc-number">1.0.1.1.</span> <span class="toc-text">相关概念：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Convolution-和-Cross-Correlation的区别"><span class="toc-number">1.0.1.2.</span> <span class="toc-text">Convolution 和 Cross-Correlation的区别</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#卷积和权重共享"><span class="toc-number">1.0.1.3.</span> <span class="toc-text">卷积和权重共享</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#反向传播"><span class="toc-number">1.0.2.</span> <span class="toc-text">反向传播</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#约定"><span class="toc-number">1.0.2.1.</span> <span class="toc-text">约定</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#正向传播过程"><span class="toc-number">1.0.2.2.</span> <span class="toc-text">正向传播过程</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#开始求解-delta-x-y-l"><span class="toc-number">1.0.2.3.</span> <span class="toc-text">开始求解$\delta_{x,y}^l$</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#求解-frac-partial-C-partial-w-m-n-l-和-frac-partial-C-partial-b-m-n-l"><span class="toc-number">1.0.2.4.</span> <span class="toc-text">求解$ \frac{\partial C}{\partial w{m, n}^{l}}$和$ \frac{\partial C}{\partial b{m, n}^{l}}$,</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#代码解析"><span class="toc-number">1.0.3.</span> <span class="toc-text">代码解析</span></a></li></ol></li></ol></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index my4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        CNN
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">rivendell</span>
+      </span>
+      
+    <div class="postdate">
+        <time datetime="2019-10-15T15:46:00.000Z" itemprop="datePublished">2019-10-15</time>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link" href="/tags/DL/">DL</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h1 id="卷积层-（Convolutional-Layer）"><a href="#卷积层-（Convolutional-Layer）" class="headerlink" title="卷积层 （Convolutional Layer）"></a>卷积层 （Convolutional Layer）</h1><h3 id="正向传播"><a href="#正向传播" class="headerlink" title="正向传播"></a>正向传播</h3><h4 id="相关概念："><a href="#相关概念：" class="headerlink" title="相关概念："></a>相关概念：</h4><p>pad：图像边缘填充的像素宽度(用来调整输出矩阵大小)<br>stride： 步长<br>depth：图片通道数<br> 假设input size 为W，filter Size 为F，stride为S， pad为P,  则输出size为$(W-F+2P)/S + 1$,</p>
+<p>如果输出值不是整数，说明设置的超参数不对，需重新设置。</p>
+<p><img src="/images/cnn_gif.gif" alt="cnn_gif"></p>
+<h4 id="Convolution-和-Cross-Correlation的区别"><a href="#Convolution-和-Cross-Correlation的区别" class="headerlink" title="Convolution 和 Cross-Correlation的区别"></a>Convolution 和 Cross-Correlation的区别</h4><p><strong>Cross-Correlation</strong>： 把核与对应的输入数据对应相乘再求和</p>
+<script type="math/tex; mode=display">(I \otimes K)_{i j}=\sum_{m=0}^{k_{1}-1} \sum_{n=0}^{k_{2}-1} I(i+m, j+n) K(m, n)  \quad(1)</script><p><strong>Convolution</strong>： 把核先反转180度，再作协相关</p>
+<script type="math/tex; mode=display">\begin{aligned}(I * K)_{i j} &=\sum_{m=0}^{k_{1}-1} \sum_{n=0}^{k_{2}-1} I(i-m, j-n) K(m, n) \quad(2)  \\ &=\sum_{m=0}^{k_{1}-1} \sum_{n=0}^{k_{2}-1} I(i+m, j+n) K(-m,-n) \quad(3)\end{aligned}</script><p><img src="/images/hFqwv.png" alt="hFqwv"></p>
+<h4 id="卷积和权重共享"><a href="#卷积和权重共享" class="headerlink" title="卷积和权重共享"></a>卷积和权重共享</h4><p>（下图在正向传播时把权重翻转了，但是在阅读相关开源代码后发现，正向传播时即初始化的时候权重并不翻转，只是在反向传播计算时才需要翻转）</p>
+<p><img src="/images/convolution-mlp-mapping.png" alt="convolution-mlp-mapping"></p>
+<p><img src="/images/cnn_gradient_finger.png" alt="cnn_gradient_finger"></p>
+<p>为了提高计算效率，卷积操作可以转化为如下的矩阵操作：</p>
+<p><strong>img2col</strong></p>
+<p><img src="/images/img2col_(1" alt="img2col_(1)">.png)</p>
+<p><img src="/images/img2col_(2" alt="img2col_(2)">.png)</p>
+<p>其他： <a href="https://www.zhihu.com/question/28385679" target="_blank" rel="noopener">https://www.zhihu.com/question/28385679</a></p>
+<h3 id="反向传播"><a href="#反向传播" class="headerlink" title="反向传播"></a>反向传播</h3><p>常规CNN的实现方式是ConvLayer , 后面接着ReLU 再后面是PoolLayer。 ConvLayer不需要考虑激活函数，因为ReLU是单独分出来的。</p>
+<h4 id="约定"><a href="#约定" class="headerlink" title="约定"></a>约定</h4><ol>
+<li><script type="math/tex; mode=display">\delta_{j}^{l}=\frac{\partial C}{\partial z_{j}^{l}} \quad(4)</script></li>
+<li><script type="math/tex; mode=display">z_{j}^{l}=\sum_{k} w_{j k}^{l} a_{k}^{l-1}+b_{j}^{l} \quad(5)</script></li>
+<li><script type="math/tex; mode=display">a_j^l = \sigma(z_j^l) \quad(6)</script></li>
+<li>卷积核的维度为$(k_1^l,k_2^l)$</li>
+<li>$H^l, W^l$为输入的高度和宽度</li>
+<li>$x,y$为$L$层行，列下标，$x’,y’$为$L+1$层行，列下标</li>
+</ol>
+<p><img src="/images/CNNConV_1.png" alt="CNNConV_1"></p>
+<p>（忽略输出H，W大小，此图仅作为理解下标而展示）</p>
+<h4 id="正向传播过程"><a href="#正向传播过程" class="headerlink" title="正向传播过程"></a><strong>正向传播过程</strong></h4><script type="math/tex; mode=display">\xcancel{ z_{x, y}^{l+1}=w^{l+1} * \sigma\left(z_{x, y}^{l}\right)+b_{x, y}^{l+1}=\sum_{m} \sum_{n} w_{m, n}^{l+1} \sigma\left(z_{x-m, y-n}^{l}\right) + b_{x,y}^{l+1} \quad(7) }</script><p>在正向传播代码实现的时候，weights的初始化和DNN一样，并不会翻转180度，只是在反向传播的时候翻转，所以上式可写成</p>
+<script type="math/tex; mode=display">z_{x, y}^{l+1}=w^{l+1} * \sigma\left(z_{x, y}^{l}\right)+b_{x, y}^{l+1}=\sum_{m} \sum_{n} w_{m, n}^{l+1} \sigma\left(z_{x+m, y+n}^{l}\right) + b_{x,y}^{l+1} \quad(7.1)</script><p>卷积层是没有激活函数，所以上式也可表示为</p>
+<script type="math/tex; mode=display">
+\begin{align}&z^l_{x,y} = \sum_{m=0}^{k_1^{l-1}-1} \sum_{n=0}^{k_2^{l-1}-1} w_{m,n}^{l} z_{x+m,y+n}^{l-1} + b_{x,y}^{l-1}  & x \in [0,H^l-1], y\in [0, W^l-1]\tag{7.2}\end{align}</script><h4 id="开始求解-delta-x-y-l"><a href="#开始求解-delta-x-y-l" class="headerlink" title="开始求解$\delta_{x,y}^l$"></a><strong>开始求解$\delta_{x,y}^l$</strong></h4><script type="math/tex; mode=display">\delta_{x, y}^{l}=\frac{\partial C}{\partial z_{x, y}^{l}}=\sum_{x'} \sum_{y'} \frac{\partial C}{\partial z_{x', y'}^{l+1}} \frac{\partial z_{x', y'}^{l+1}}{\partial z_{x, y}^{l}} = \sum_{x'} \sum_{y^{\prime}} \delta_{x', y'}^{l+1} \frac{\partial(\sum_m \sum_n w_{m, n}^{l+1} \sigma(z_{x' + m, y' + n}^{l})+b_{x', y'}^{l+1})}{\partial z_{x, y}^{l}} \quad(8)</script><p>当   <script type="math/tex">x = x' +  m, y = y' + n  \quad(9)</script>   时，</p>
+<script type="math/tex; mode=display">\frac{\partial\left(\sum_{m} \sum_{n} w_{m, n}^{l+1} \sigma\left(z_{x' + m, y' + n}^{l}\right)+b_{x', y'}^{l+1}\right)}{\partial z_{x, y}^{l}} \quad(10)$$的值才不为0
+
+此时$$\delta_{x,y}^l = \sum_{x'} \sum_{y'} \delta_{x', y'}^{l+1} w_{m, n}^{l+1} \sigma'\left(z_{x, y}^{l}\right)  \quad(11)</script><p>由9式可知$m = x -x’, n = y - y’ \quad(12)$ 带入上式可得</p>
+<script type="math/tex; mode=display">\sum_{x^{\prime}} \sum_{y^{\prime}} \delta_{x^{\prime}, y^{\prime}}^{l+1} w_{m, n}^{l+1} \sigma^{\prime}\left(z_{x, y}^{l}\right)=\sum_{x^{\prime}} \sum_{y^{\prime}} \delta_{x', y'}^{l+1} w_{x -x', y-y'}^{l+1} \sigma^{\prime}\left(z_{x, y}^{l}\right) \quad(13)</script><p>最后得 <script type="math/tex">\delta_{x,y}^l=\sum_{x^{\prime}} \sum_{y^{\prime}} \delta_{x', y'}^{l+1} w_{x -x', y-y'}^{l+1} \sigma^{\prime}(z_{x, y}^{l}) \quad(14)</script></p>
+<p>因为ConvLayer一般 不包括激活函数，可认为$\sigma^{\prime}(z_{x, y}^{l})  = 1$</p>
+<p>接下来证明 </p>
+<script type="math/tex; mode=display">
+\begin{align}
+\delta^l =  p\delta^{l+1} * ROT180^{\circ}w^l 
+\end{align} \tag {15}</script><p>$p\delta^l$ 这在里表示：</p>
+<ul>
+<li><p>正向传播的步长为1，pad为0时，$p\delta^l$ 为$\delta^l$ <strong>外围</strong>加上padding（ 高宽为卷积核高宽减1即$(f_1^{l-1}-1,f_2^{l-1}-1)$  ）后的梯度矩阵（步长为1的时候);</p>
+</li>
+<li><p>正向传播的步长不为1，pad为0时，$p\delta^l$ 为$\delta^l$ 的在<strong>行列间</strong> 插入宽高为 $(S - 1)$的零元素，再在外围填充宽高为$(F-1) $的零元素</p>
+</li>
+</ul>
+<p>$p\delta^l$ 和$\delta^l$ 的关系根据核心宽高 和步长的关系如下图所示：</p>
+<p><img src="/images/反向传播填充dz.png" alt="反向传播填充dz"></p>
+<ul>
+<li>pad不为0时,$\delta^l$在式15 的卷积运算之后需要去掉外围padding</li>
+</ul>
+<p><strong>证明：</strong></p>
+<p>已知$m \in [0, k_1{^l} - 1],n\in [0, k_2{^l} - 1]$</p>
+<p>根据12式得$x - x’ \in [0, k_1{^l} - 1], y - y’\in [0, k_2{^l} - 1]$</p>
+<p>变换一下得： $ x’ \in [1 - k_1{^l} + x, x], y’ \in [1 -  k_2{^l} + y , y]$</p>
+<p>由于$x \in [0, H^l - 1], y \in [0, W^l - 1]$</p>
+<p>因此有</p>
+<script type="math/tex; mode=display">
+\begin{cases}
+x' \in [\max(0,x +1 - k_1{^l}),\min(H^l-1,x)] \\
+y' \in [\max(0,y +1 - k_2{^l}),\min(\ W^l-1,y)]   \tag {16}
+\end{cases}</script><p>下面来看一个例子，对于l-1层 $5 \times 5$ 的卷积层，卷积核$3 \times 3$ , 则输出的l层卷积大小为5-3+1=3，也就是$3 \times 3$ , 此时有：</p>
+<script type="math/tex; mode=display">
+\begin{cases}
+x' \in [\max(0, x - 2),\min(2,x)] \\
+y' \in [\max(0,y - 2),\min(2,y)]   \tag {17}
+\end{cases}</script><p>根据公式12的约束</p>
+<script type="math/tex; mode=display">
+\begin{align}
+&\delta^{l}_{0,0} =\delta^{l+1}_{0,0}W^{l+1}_{0,0} &x' \in [0,0],y' \in [0,0] \\
+&\delta^{l}_{0,1} =\delta^{l+1}_{0,1}W^{l+1}_{0,0} + \delta^{l+1}_{0,0}W^{l+1}_{0,1} &x' \in [0,0],y' \in [0,1] \\
+&\delta^{l}_{0,2} =\delta^{l+1}_{0,2}W^{l+1}_{0,0} + \delta^{l+1}_{0,1}W^{l+1}_{0,1} +\delta^{l+1}_{0,0}W^{l+1}_{0,2} &x' \in [0,0],y' \in [0,2] \\
+&\delta^{l}_{1,0} =\delta^{l+1}_{1,0}W^{l+1}_{0,0} + \delta^{l+1}_{0,0}W^{l+1}_{1,0} &x' \in [0,1],y' \in [0,0] \\
+&\delta^{l}_{1,1} =\delta^{l+1}_{1,1}W^{l+1}_{0,0} + \delta^{l+1}_{0,1}W^{l+1}_{1,0} +\delta^{l+1}_{1,0}W^{l+1}_{0,1} + \delta^{l+1}_{0,0}W^{l+1}_{1,1} &x' \in [0,1],y' \in [0,1] \\
+&\delta^{l}_{1,2} = \sum_{x'} \sum_{y'} \delta^{l+1}_{x',y'}  W^{l+1}_{x - x',y - y'} &x' \in [0,1],y' \in [0,2] \\
+&... ... \\
+&\delta^{l}_{2,2} = \sum_{x'} \sum_{y'} \delta^{l+1}_{x',y'}  W^{l+1}_{x - x',y - y'} &x' \in [0,1],y' \in [0,2] \\
+\end{align}</script><p> 等价于以下的卷积</p>
+<script type="math/tex; mode=display">
+\delta^{l}=\left(
+\begin{align}
+&0, &&0,&&0,&&0,&&0,&&0,&&0 \\
+&0, &&0,&&0,&&0,&&0,&&0,&&0 \\
+&0,&&0,&&\delta^{l+1}_{0,0},&&\delta^{l+1}_{0,1},&&\delta^{l+1}_{0,2},&&0,&&0\\
+&0,&&0,&&\delta^{l+1}_{1,0},&&\delta^{l+1}_{1,1},&&\delta^{l+1}_{1,2},&&0,&&0\\
+&0,&&0,&&\delta^{l+1}_{2,0},&&\delta^{l+1}_{2,1},&&\delta^{l+1}_{2,2},&&0,&&0\\
+&0,&&0, &&0,&&0,&&0,&&0,&&0 \\
+&0,&&0, &&0,&&0,&&0,&&0,&&0
+\end{align}
+\right) *
+\left(
+\begin{array}
+aW^{l+1}_{2,2},& W^{l+1}_{2,1},& W^{l+1}_{2,0}\\
+W^{l+1}_{1,2},& W^{l+1}_{11},& W^{l+1}_{1,0}\\
+W^{l+1}_{0,2},& W^{l+1}_{01},& W^{l+1}_{0,0}\\
+\end{array}
+\right)</script><p>​          即以$W^{l}$ 翻转$180^\circ$ 的矩阵为卷积核在$\delta^{l+1}$ 加上padding=2(卷积核为$3 \times 3$ )的矩阵上做卷积的结果。</p>
+<p>证毕</p>
+<h4 id="求解-frac-partial-C-partial-w-m-n-l-和-frac-partial-C-partial-b-m-n-l"><a href="#求解-frac-partial-C-partial-w-m-n-l-和-frac-partial-C-partial-b-m-n-l" class="headerlink" title="求解$ \frac{\partial C}{\partial w{m, n}^{l}}$和$ \frac{\partial C}{\partial b{m, n}^{l}}$,"></a><strong>求解$ \frac{\partial C}{\partial w<em>{m, n}^{l}}$和$ \frac{\partial C}{\partial b</em>{m, n}^{l}}$</strong>,</h4><script type="math/tex; mode=display">
+\begin{align}
+&\frac{\partial C}{\partial w_{m, n}^{l}} = \sum_{x} \sum_{y} \frac{\partial C}{\partial z_{x, y}^{l}} \frac{\partial z_{x, y}^{l}}{\partial w_{m, n}^{l}} \\
+&=\sum_{x} \sum_{y} \delta_{x, y}^{l} \frac{\partial(\sum_{m'} \sum_{n'} w_{m', n'}^{l} \sigma(z_{x+m', y+n'}^{l-1})+b_{x, y}^{l})}{\partial w_{m, n}^{l}}\\
+&=  
+{\sum_{x} \sum_{y} \delta_{x, y}^{l} \sigma(z_{x+m, y+n}^{l-1})}
+\end{align} \tag {18}</script><script type="math/tex; mode=display">
+\begin{align}
+&\frac{\partial C}{\partial b_{x, y}^{l}}=\sum_{x} \sum_{y} \frac{\partial C}{\partial z_{x, y}^{l}} \frac{\partial z_{x, y}^{l}}{\partial b_{x, y}^{l}} \\
+&=\sum_{x} \sum_{y} \delta_{x, y}^{l} \frac{\partial(\sum_{m'} \sum_{n'} w_{m', n'}^{l} \sigma(z_{x-a^{\prime}, y-b^{\prime}}^{l})+b_{x, y}^{l})}{\partial b_{x, y}^{l}} \\
+&= \sum_x\sum_y \delta_{x,y}^{l} = \delta_{x,y}^{l} 
+
+\end{align}  \tag {19}</script><h3 id="代码解析"><a href="#代码解析" class="headerlink" title="代码解析"></a>代码解析</h3><p>按照公式的推导</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">conv_backward</span><span class="params">(dZ, cache)</span>:</span></span><br><span class="line">   <span class="string">"""</span></span><br><span class="line"><span class="string">   :param dZ: (m, n_H, n_W, C)</span></span><br><span class="line"><span class="string">   :param cache: A_prev, w, b, padding, strides</span></span><br><span class="line"><span class="string">     A_prev:  (m, n_H_prev, n_W_prev, C_prev)</span></span><br><span class="line"><span class="string">     w: (f, f, C_prev, C)</span></span><br><span class="line"><span class="string">     b: (1, 1, 1, C)</span></span><br><span class="line"><span class="string">   :return: dz_prev</span></span><br><span class="line"><span class="string">   """</span></span><br><span class="line">   A_prev, W, b, padding, strides = cache</span><br><span class="line">   m, n_H_prev, n_W_prev, C_prev = A_prev.shape</span><br><span class="line">   f, f, C_prev, C = W.shape</span><br><span class="line">   <span class="comment">#根据步长，在行列间填充0</span></span><br><span class="line">   dZ_padding_inner = _insert_zeros(dZ, strides)</span><br><span class="line">   <span class="comment">#根据卷积核宽高，在外围填充0</span></span><br><span class="line">   dZ_padding_in_out = zero_pad(dZ_padding_inner, pad=(f - <span class="number">1</span>, f - <span class="number">1</span>))</span><br><span class="line">   <span class="comment">#翻转卷积核</span></span><br><span class="line">   W_flip = np.flip(W, (<span class="number">0</span>, <span class="number">1</span>))</span><br><span class="line">   <span class="comment"># 因为是计算反向传播，需要交换卷积核心输入和输出通道</span></span><br><span class="line">   W_flip = np.swapaxes(W_flip, <span class="number">2</span>, <span class="number">3</span>)</span><br><span class="line">   <span class="comment"># dz已经在行列间以及外围填充0。在这里卷积函数的参数pad和strides区默认的0和1就行了</span></span><br><span class="line">   dA_prev, _ = conv_forward(A=dZ_padding_in_out, W=W_flip, b=np.zeros((<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,C)))</span><br><span class="line">   <span class="comment">#计算dw = A_prev 卷积 dz,   (m, n_H_prev + pad, n_W_prev + pad,, C_prev)</span></span><br><span class="line">   <span class="string">"""</span></span><br><span class="line"><span class="string">    在这里卷积的维度关系：</span></span><br><span class="line"><span class="string">    (m, n_H_prev, n_W_prev, C_prev)  *  (f, f, C_prev, C_next)  -&gt;  (m , n_H, n_W, C_next)</span></span><br><span class="line"><span class="string">   </span></span><br><span class="line"><span class="string">   求dw, 怎样使得 A * dZ -&gt; W 即 (m, n_H_prev, n_W_prev, C_prev)  *  (m , n_H, n_W, C_next)   ？-&gt; (f, f, C_prev, C_next)</span></span><br><span class="line"><span class="string">   A交换一次C_prev和m， dZ要交换两次m和n_H换， m再和n_W换， 得出的dW需要再交换                                                  </span></span><br><span class="line"><span class="string">   (C_prev, n_H_prev, n_W_prev, m)  *  ( n_H, n_W, m, C_next)   ？-&gt; (C_prev, f, f , C_next)</span></span><br><span class="line"><span class="string">   """</span></span><br><span class="line">   A_prev_swap = np.swapaxes(A_prev, <span class="number">0</span>, <span class="number">3</span>)</span><br><span class="line">   dZ_swap = np.swapaxes(dZ, <span class="number">0</span>, <span class="number">1</span>)</span><br><span class="line">   dZ_swap = np.swapaxes(dZ_swap, <span class="number">1</span>, <span class="number">2</span>)</span><br><span class="line">   dw, _ = conv_forward(A=A_prev_swap, W=dZ_swap, b=np.zeros((<span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, C)), padding=padding, strides=strides)</span><br><span class="line">   dw = np.swapaxes(dw, <span class="number">0</span>, <span class="number">2</span>)</span><br><span class="line">   db = np.sum(np.sum(np.sum(dZ, axis=<span class="number">2</span>, keepdims=<span class="keyword">True</span>), axis=<span class="number">1</span>, keepdims=<span class="keyword">True</span>), axis=<span class="number">0</span>, keepdims=<span class="keyword">True</span>)  <span class="comment"># 在高度、宽度上相加；批量大小上相加</span></span><br><span class="line">   <span class="comment"># 如果padding不等于0 在运算过后需要移除padding</span></span><br><span class="line">   dA_prev = _remove_padding(dA_prev, padding)</span><br><span class="line">   <span class="keyword">return</span> dA_prev, dw/m, db/m</span><br></pre></td></tr></table></figure>
+<p>Andrew Ng的教程:</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">conv_backward_2</span><span class="params">(dZ, cache)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    Andrew Ng教程的反向传播</span></span><br><span class="line"><span class="string">    理解这个函数可以把思想反过来：</span></span><br><span class="line"><span class="string">    正向传播的时候</span></span><br><span class="line"><span class="string">    Z[i, h, w, c] = A_pad[i, v_start: v_end,  h_start: h_end, :] * W[:,:,:, c] + b[:, :, :, c]</span></span><br><span class="line"><span class="string">    反向的时候dA_prev[i, v_start: v_end,  h_start: h_end, :] = Z[i, h, w, c] * W[:,:,:, c]</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    这样的好处是， 和正向传播的时候逻辑一致, 加padding就是根据padding加，  stride也是在遍历的时候处理</span></span><br><span class="line"><span class="string">    不需要考虑给dZ加padding以及W翻转问题</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    Arguments:</span></span><br><span class="line"><span class="string">    dZ --   (m, n_H, n_W, n_C)</span></span><br><span class="line"><span class="string">    cache -- cache of values needed for the conv_backward(), output of conv_forward()</span></span><br><span class="line"><span class="string">    Returns:</span></span><br><span class="line"><span class="string">    dA_prev --  (m, n_H_prev, n_W_prev, n_C_prev)</span></span><br><span class="line"><span class="string">    dW --  (f, f, n_C_prev, n_C)</span></span><br><span class="line"><span class="string">    db -- g(1, 1, 1, n_C)</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    A_prev, W, b, padding, strides = cache</span><br><span class="line">    (m, n_H_prev, n_W_prev, n_C_prev) = A_prev.shape</span><br><span class="line">    (f, f, n_C_prev, n_C) = W.shape</span><br><span class="line"></span><br><span class="line">    (m, n_H, n_W, n_C) = dZ.shape</span><br><span class="line">    dA_prev = np.zeros((m, n_H_prev, n_W_prev, n_C_prev))</span><br><span class="line"></span><br><span class="line">    dW = np.zeros((f, f, n_C_prev, n_C))</span><br><span class="line">    db = np.zeros((<span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, n_C))</span><br><span class="line"></span><br><span class="line">    A_prev_pad = zero_pad(A_prev, padding)</span><br><span class="line">    dA_prev_pad = zero_pad(dA_prev, padding)</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(m):</span><br><span class="line">        <span class="keyword">for</span> h <span class="keyword">in</span> range(n_H):</span><br><span class="line">            <span class="keyword">for</span> w <span class="keyword">in</span> range(n_W):</span><br><span class="line">                <span class="keyword">for</span> c <span class="keyword">in</span> range(n_C):</span><br><span class="line">                    vert_start = h * strides[<span class="number">0</span>]</span><br><span class="line">                    vert_end = vert_start + f</span><br><span class="line">                    horiz_start = w * strides[<span class="number">1</span>]</span><br><span class="line">                    horiz_end = horiz_start + f</span><br><span class="line">                    a_slice = A_prev_pad[i, vert_start:vert_end, horiz_start:horiz_end, :]</span><br><span class="line">                    dA_prev_pad[i, vert_start:vert_end, horiz_start:horiz_end, :] += W[:, :, :, c] * dZ[i, h, w, c]</span><br><span class="line">                    dW[:, :, :, c] += a_slice * dZ[i, h, w, c]</span><br><span class="line">                    db[:, :, :, c] += dZ[i, h, w, c]</span><br><span class="line">    dA_prev = _remove_padding(dA_prev_pad, padding)</span><br><span class="line">    <span class="keyword">assert</span> (dA_prev.shape == (m, n_H_prev, n_W_prev, n_C_prev))</span><br><span class="line">    <span class="keyword">return</span> dA_prev, dW, db</span><br></pre></td></tr></table></figure>
+
+  </div>
+</article>
+
+    <div class="blog-post-comments">
+        <div id="disqus_thread">
+            <noscript>Please enable JavaScript to view the comments.</noscript>
+        </div>
+    </div>
+
+
+
+    </div>
+    
+      <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about">About</a></li>
+         
+          <li><a href="/archives">Writing</a></li>
+         
+          <li><a href="/tags">tags</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#卷积层-（Convolutional-Layer）"><span class="toc-number">1.</span> <span class="toc-text">卷积层 （Convolutional Layer）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#正向传播"><span class="toc-number">1.0.1.</span> <span class="toc-text">正向传播</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#相关概念："><span class="toc-number">1.0.1.1.</span> <span class="toc-text">相关概念：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Convolution-和-Cross-Correlation的区别"><span class="toc-number">1.0.1.2.</span> <span class="toc-text">Convolution 和 Cross-Correlation的区别</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#卷积和权重共享"><span class="toc-number">1.0.1.3.</span> <span class="toc-text">卷积和权重共享</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#反向传播"><span class="toc-number">1.0.2.</span> <span class="toc-text">反向传播</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#约定"><span class="toc-number">1.0.2.1.</span> <span class="toc-text">约定</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#正向传播过程"><span class="toc-number">1.0.2.2.</span> <span class="toc-text">正向传播过程</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#开始求解-delta-x-y-l"><span class="toc-number">1.0.2.3.</span> <span class="toc-text">开始求解$\delta_{x,y}^l$</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#求解-frac-partial-C-partial-w-m-n-l-和-frac-partial-C-partial-b-m-n-l"><span class="toc-number">1.0.2.4.</span> <span class="toc-text">求解$ \frac{\partial C}{\partial w{m, n}^{l}}$和$ \frac{\partial C}{\partial b{m, n}^{l}}$,</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#代码解析"><span class="toc-number">1.0.3.</span> <span class="toc-text">代码解析</span></a></li></ol></li></ol></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://d2rivendell.github.io/2019/10/15/CNN/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://d2rivendell.github.io/2019/10/15/CNN/&text=CNN"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://d2rivendell.github.io/2019/10/15/CNN/&title=CNN"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://d2rivendell.github.io/2019/10/15/CNN/&is_video=false&description=CNN"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=CNN&body=Check out this article: http://d2rivendell.github.io/2019/10/15/CNN/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://d2rivendell.github.io/2019/10/15/CNN/&title=CNN"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://d2rivendell.github.io/2019/10/15/CNN/&title=CNN"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://d2rivendell.github.io/2019/10/15/CNN/&title=CNN"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://d2rivendell.github.io/2019/10/15/CNN/&title=CNN"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://d2rivendell.github.io/2019/10/15/CNN/&name=CNN&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+    
+    <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy; 2020 leon
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about">About</a></li>
+         
+          <li><a href="/archives">Writing</a></li>
+         
+          <li><a href="/tags">tags</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"log":false,"model":{"jsonPath":"/live2dw/assets/hijiki.model.json"},"display":{"position":"right","width":75,"height":150},"mobile":{"show":true}});</script></body>
+</html>
+<!-- styles -->
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+<link rel="stylesheet" href="/lib/justified-gallery/css/justifiedGallery.min.css">
+
+<!-- jquery -->
+<script src="/lib/jquery/jquery.min.js"></script>
+<script src="/lib/justified-gallery/js/jquery.justifiedGallery.min.js"></script>
+<script src="/js/main.js"></script>
+<!-- search -->
+
+<!-- Google Analytics -->
+
+    <script type="text/javascript">
+        (function(i,s,o,g,r,a,m) {i['GoogleAnalyticsObject']=r;i[r]=i[r]||function() {
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+        ga('create', 'UA-127325381-1', 'auto');
+        ga('send', 'pageview');
+    </script>
+
+<!-- Baidu Analytics -->
+
+<!-- Disqus Comments -->
+
+    <script type="text/javascript">
+        var disqus_shortname = 'leonhwa';
+
+        (function(){
+            var dsq = document.createElement('script');
+            dsq.type = 'text/javascript';
+            dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        }());
+    </script>
+
+

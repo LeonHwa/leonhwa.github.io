@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="description" content="tanh和sigmoid的区别效果总是优于sigmoid函数。因为函数值域在-1和+1的激活函数，其均值是更接近零均值的。在训练一个算法模型时，如果使用tanh函数代替sigmoid函数中心化数据，使得数据的平均值更接近0而不是0.5 tanh和sigmoid的共同缺点函数两者共同的缺点是，在𝑧特别大或者特别小的情况下，导数的梯度或者函数的斜率会变得特别小，最后就会接近于0，导致降低梯度下降的">
+<meta name="keywords" content="DL">
+<meta property="og:type" content="article">
+<meta property="og:title" content="激活函数">
+<meta property="og:url" content="http://d2rivendell.github.io/2019/09/26/激活函数/index.html">
+<meta property="og:site_name" content="rivendell">
+<meta property="og:description" content="tanh和sigmoid的区别效果总是优于sigmoid函数。因为函数值域在-1和+1的激活函数，其均值是更接近零均值的。在训练一个算法模型时，如果使用tanh函数代替sigmoid函数中心化数据，使得数据的平均值更接近0而不是0.5 tanh和sigmoid的共同缺点函数两者共同的缺点是，在𝑧特别大或者特别小的情况下，导数的梯度或者函数的斜率会变得特别小，最后就会接近于0，导致降低梯度下降的">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://d2rivendell.github.io/images/activation.png">
+<meta property="og:updated_time" content="2020-10-23T09:07:38.913Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="激活函数">
+<meta name="twitter:description" content="tanh和sigmoid的区别效果总是优于sigmoid函数。因为函数值域在-1和+1的激活函数，其均值是更接近零均值的。在训练一个算法模型时，如果使用tanh函数代替sigmoid函数中心化数据，使得数据的平均值更接近0而不是0.5 tanh和sigmoid的共同缺点函数两者共同的缺点是，在𝑧特别大或者特别小的情况下，导数的梯度或者函数的斜率会变得特别小，最后就会接近于0，导致降低梯度下降的">
+<meta name="twitter:image" content="http://d2rivendell.github.io/images/activation.png">
+    
+    
+        
+          
+              <link rel="shortcut icon" href="/images/favicon.ico">
+          
+        
+        
+          
+            <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+          
+        
+        
+          
+            <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+          
+        
+    
+    <!-- title -->
+    <title>激活函数</title>
+    <!-- styles -->
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- persian styles -->
+    
+      <link rel="stylesheet" href="/css/rtl.css">
+    
+    <!-- rss --><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+    
+    
+</head>
+
+<body class="max-width mx-auto px3 ltl">    
+      <!-- hexo-inject:begin --><!-- hexo-inject:end --><div id="header-post">
+  <a id="menu-icon" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about">About</a></li>
+         
+          <li><a href="/archives">Writing</a></li>
+         
+          <li><a href="/tags">tags</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" href="/2019/10/02/线性回归/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" href="/2019/09/22/偏差和方差/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://d2rivendell.github.io/2019/09/26/激活函数/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://d2rivendell.github.io/2019/09/26/激活函数/&text=激活函数"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://d2rivendell.github.io/2019/09/26/激活函数/&title=激活函数"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://d2rivendell.github.io/2019/09/26/激活函数/&is_video=false&description=激活函数"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=激活函数&body=Check out this article: http://d2rivendell.github.io/2019/09/26/激活函数/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://d2rivendell.github.io/2019/09/26/激活函数/&title=激活函数"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://d2rivendell.github.io/2019/09/26/激活函数/&title=激活函数"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://d2rivendell.github.io/2019/09/26/激活函数/&title=激活函数"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://d2rivendell.github.io/2019/09/26/激活函数/&title=激活函数"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://d2rivendell.github.io/2019/09/26/激活函数/&name=激活函数&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#tanh和sigmoid的区别"><span class="toc-number">1.</span> <span class="toc-text">tanh和sigmoid的区别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#tanh和sigmoid的共同缺点"><span class="toc-number">2.</span> <span class="toc-text">tanh和sigmoid的共同缺点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ReLu和Leaky-ReLu的优点是："><span class="toc-number">3.</span> <span class="toc-text">ReLu和Leaky ReLu的优点是：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#使用总结"><span class="toc-number">4.</span> <span class="toc-text">使用总结</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#导数"><span class="toc-number">5.</span> <span class="toc-text">导数</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#sigmoid"><span class="toc-number">5.1.</span> <span class="toc-text">sigmoid</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#tanh"><span class="toc-number">5.2.</span> <span class="toc-text">tanh</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#ReLU-Rectified-Linear-Unit"><span class="toc-number">5.3.</span> <span class="toc-text">ReLU(Rectified Linear Unit)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Leaky-ReLU-Leaky-Linear-Unit"><span class="toc-number">5.4.</span> <span class="toc-text">Leaky ReLU(Leaky Linear Unit)</span></a></li></ol></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index my4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        激活函数
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">rivendell</span>
+      </span>
+      
+    <div class="postdate">
+        <time datetime="2019-09-26T15:58:29.000Z" itemprop="datePublished">2019-09-26</time>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link" href="/tags/DL/">DL</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <p><img src="/images/activation.png" alt="activation"></p>
+<h3 id="tanh和sigmoid的区别"><a href="#tanh和sigmoid的区别" class="headerlink" title="tanh和sigmoid的区别"></a><strong>tanh</strong>和<strong>sigmoid</strong>的区别</h3><p>效果总是优于<strong>sigmoid</strong>函数。因为函数值域在-1和+1的激活函数，其均值是更接近零均值的。在训练一个算法模型时，如果使用<strong>tanh</strong>函数代替<strong>sigmoid</strong>函数中心化数据，使得数据的平均值更接近0而不是0.5</p>
+<h3 id="tanh和sigmoid的共同缺点"><a href="#tanh和sigmoid的共同缺点" class="headerlink" title="tanh和sigmoid的共同缺点"></a><strong>tanh</strong>和<strong>sigmoid</strong>的共同缺点</h3><p>函数两者共同的缺点是，在𝑧特别大或者特别小的情况下，导数的梯度或者函数的斜率会变得特别小，最后就会接近于0，导致降低梯度下降的速度。</p>
+<h3 id="ReLu和Leaky-ReLu的优点是："><a href="#ReLu和Leaky-ReLu的优点是：" class="headerlink" title="ReLu和Leaky ReLu的优点是："></a><strong>ReLu</strong>和<strong>Leaky ReLu</strong>的优点是：</h3><ul>
+<li>在$z$的区间变动很大的情况下，激活函数的导数或者激活函数的斜率都会远大于0，在程序实现就是一个<strong>if-else</strong>语句，而<strong>sigmoid</strong>函数需要进行浮点四则运算，在实践中，使用<strong>ReLu</strong>激活函数神经网络通常会比使用<strong>sigmoid</strong>或者<strong>tanh</strong>激活函数学习的更快。</li>
+<li><strong>sigmoid</strong>和<strong>tanh</strong>函数的导数在正负饱和区的梯度都会接近于0，这会造成梯度弥散，而<strong>Relu</strong>和<strong>Leaky ReLu</strong>函数大于0部分都为常数，不会产生梯度弥散现象。(同时应该注意到的是，<strong>Relu</strong>进入负半区的时候，梯度为0，神经元此时不会训练，产生所谓的稀疏性，而<strong>Leaky ReLu</strong>不会有这问题) </li>
+</ul>
+<h3 id="使用总结"><a href="#使用总结" class="headerlink" title="使用总结"></a>使用总结</h3><p><strong>sigmoid</strong>激活函数：除了输出层是一个二分类问题基本不会用它。</p>
+<p><strong>tanh</strong>激活函数：<strong>tanh</strong>是非常优秀的，几乎适合所有场合。</p>
+<p><strong>ReLu</strong>激活函数：最常用的默认函数，，如果不确定用哪个激活函数，就使用<strong>ReLu</strong>或者<strong>Leaky ReLu</strong>。</p>
+<h3 id="导数"><a href="#导数" class="headerlink" title="导数"></a>导数</h3><h4 id="sigmoid"><a href="#sigmoid" class="headerlink" title="sigmoid"></a>sigmoid</h4><script type="math/tex; mode=display">g(z) = \frac{1}{1+e^{-z}}</script><script type="math/tex; mode=display">g^{\prime}(z) = g(z)(1-g(z))</script><h4 id="tanh"><a href="#tanh" class="headerlink" title="tanh"></a>tanh</h4><script type="math/tex; mode=display">g(z)=\tanh (z)=\frac{e^{z}-e^{-z}}{e^{z}+e^{-z}}</script><script type="math/tex; mode=display">g^{\prime}(z) = 1 - (tanh(z))^2</script><h4 id="ReLU-Rectified-Linear-Unit"><a href="#ReLU-Rectified-Linear-Unit" class="headerlink" title="ReLU(Rectified Linear Unit)"></a>ReLU(Rectified Linear Unit)</h4><script type="math/tex; mode=display">g(z) =max(0,z)</script><script type="math/tex; mode=display">g(z)^{\prime}=\left\{\begin{array}{ll}{0} & {\text { if } \quad z<0} \\ {1} & {\text { if } \quad z>0} \\ {\text {undefined}} & {\text { if } \quad z=0}\end{array}\right.</script><h4 id="Leaky-ReLU-Leaky-Linear-Unit"><a href="#Leaky-ReLU-Leaky-Linear-Unit" class="headerlink" title="Leaky ReLU(Leaky Linear Unit)"></a>Leaky ReLU(Leaky Linear Unit)</h4><script type="math/tex; mode=display">g(z) =max(0.01,z)</script><script type="math/tex; mode=display">g(z)^{\prime}=\left\{\begin{array}{ll}{0.01z} & {\text { if } \quad z<0} \\ {1} & {\text { if } \quad z>0} \\ {\text {undefined}} & {\text { if } \quad z=0}\end{array}\right.</script>
+  </div>
+</article>
+
+    <div class="blog-post-comments">
+        <div id="disqus_thread">
+            <noscript>Please enable JavaScript to view the comments.</noscript>
+        </div>
+    </div>
+
+
+
+    </div>
+    
+      <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about">About</a></li>
+         
+          <li><a href="/archives">Writing</a></li>
+         
+          <li><a href="/tags">tags</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#tanh和sigmoid的区别"><span class="toc-number">1.</span> <span class="toc-text">tanh和sigmoid的区别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#tanh和sigmoid的共同缺点"><span class="toc-number">2.</span> <span class="toc-text">tanh和sigmoid的共同缺点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ReLu和Leaky-ReLu的优点是："><span class="toc-number">3.</span> <span class="toc-text">ReLu和Leaky ReLu的优点是：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#使用总结"><span class="toc-number">4.</span> <span class="toc-text">使用总结</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#导数"><span class="toc-number">5.</span> <span class="toc-text">导数</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#sigmoid"><span class="toc-number">5.1.</span> <span class="toc-text">sigmoid</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#tanh"><span class="toc-number">5.2.</span> <span class="toc-text">tanh</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#ReLU-Rectified-Linear-Unit"><span class="toc-number">5.3.</span> <span class="toc-text">ReLU(Rectified Linear Unit)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Leaky-ReLU-Leaky-Linear-Unit"><span class="toc-number">5.4.</span> <span class="toc-text">Leaky ReLU(Leaky Linear Unit)</span></a></li></ol></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://d2rivendell.github.io/2019/09/26/激活函数/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://d2rivendell.github.io/2019/09/26/激活函数/&text=激活函数"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://d2rivendell.github.io/2019/09/26/激活函数/&title=激活函数"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://d2rivendell.github.io/2019/09/26/激活函数/&is_video=false&description=激活函数"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=激活函数&body=Check out this article: http://d2rivendell.github.io/2019/09/26/激活函数/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://d2rivendell.github.io/2019/09/26/激活函数/&title=激活函数"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://d2rivendell.github.io/2019/09/26/激活函数/&title=激活函数"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://d2rivendell.github.io/2019/09/26/激活函数/&title=激活函数"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://d2rivendell.github.io/2019/09/26/激活函数/&title=激活函数"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://d2rivendell.github.io/2019/09/26/激活函数/&name=激活函数&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+    
+    <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy; 2020 leon
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about">About</a></li>
+         
+          <li><a href="/archives">Writing</a></li>
+         
+          <li><a href="/tags">tags</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"log":false,"model":{"jsonPath":"/live2dw/assets/hijiki.model.json"},"display":{"position":"right","width":75,"height":150},"mobile":{"show":true}});</script></body>
+</html>
+<!-- styles -->
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+<link rel="stylesheet" href="/lib/justified-gallery/css/justifiedGallery.min.css">
+
+<!-- jquery -->
+<script src="/lib/jquery/jquery.min.js"></script>
+<script src="/lib/justified-gallery/js/jquery.justifiedGallery.min.js"></script>
+<script src="/js/main.js"></script>
+<!-- search -->
+
+<!-- Google Analytics -->
+
+    <script type="text/javascript">
+        (function(i,s,o,g,r,a,m) {i['GoogleAnalyticsObject']=r;i[r]=i[r]||function() {
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+        ga('create', 'UA-127325381-1', 'auto');
+        ga('send', 'pageview');
+    </script>
+
+<!-- Baidu Analytics -->
+
+<!-- Disqus Comments -->
+
+    <script type="text/javascript">
+        var disqus_shortname = 'leonhwa';
+
+        (function(){
+            var dsq = document.createElement('script');
+            dsq.type = 'text/javascript';
+            dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        }());
+    </script>
+
+

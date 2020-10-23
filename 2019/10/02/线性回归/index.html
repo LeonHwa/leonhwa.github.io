@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="description" content="基本概念监督学习： 根据样本特征和对应结果，对新的样本作出预测，如预测房价（回归问题）和是否是肿瘤（分类问题） 假设方案函数为$h(\theta) = \theta_0 + \theta_1 x\quad(1)$ 代价函数(cost function) $J(\theta0,\theta_1) =  \frac{1}{2m}\sum{i=1}^{m}(h(\theta^{(i)} - y^{(i)">
+<meta name="keywords" content="ML">
+<meta property="og:type" content="article">
+<meta property="og:title" content="线性回归">
+<meta property="og:url" content="http://d2rivendell.github.io/2019/10/02/线性回归/index.html">
+<meta property="og:site_name" content="rivendell">
+<meta property="og:description" content="基本概念监督学习： 根据样本特征和对应结果，对新的样本作出预测，如预测房价（回归问题）和是否是肿瘤（分类问题） 假设方案函数为$h(\theta) = \theta_0 + \theta_1 x\quad(1)$ 代价函数(cost function) $J(\theta0,\theta_1) =  \frac{1}{2m}\sum{i=1}^{m}(h(\theta^{(i)} - y^{(i)">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2020-10-23T09:07:38.914Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="线性回归">
+<meta name="twitter:description" content="基本概念监督学习： 根据样本特征和对应结果，对新的样本作出预测，如预测房价（回归问题）和是否是肿瘤（分类问题） 假设方案函数为$h(\theta) = \theta_0 + \theta_1 x\quad(1)$ 代价函数(cost function) $J(\theta0,\theta_1) =  \frac{1}{2m}\sum{i=1}^{m}(h(\theta^{(i)} - y^{(i)">
+    
+    
+        
+          
+              <link rel="shortcut icon" href="/images/favicon.ico">
+          
+        
+        
+          
+            <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+          
+        
+        
+          
+            <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+          
+        
+    
+    <!-- title -->
+    <title>线性回归</title>
+    <!-- styles -->
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- persian styles -->
+    
+      <link rel="stylesheet" href="/css/rtl.css">
+    
+    <!-- rss --><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+    
+    
+</head>
+
+<body class="max-width mx-auto px3 ltl">    
+      <!-- hexo-inject:begin --><!-- hexo-inject:end --><div id="header-post">
+  <a id="menu-icon" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about">About</a></li>
+         
+          <li><a href="/archives">Writing</a></li>
+         
+          <li><a href="/tags">tags</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" href="/2019/10/02/逻辑回归/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" href="/2019/09/26/激活函数/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://d2rivendell.github.io/2019/10/02/线性回归/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://d2rivendell.github.io/2019/10/02/线性回归/&text=线性回归"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://d2rivendell.github.io/2019/10/02/线性回归/&title=线性回归"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://d2rivendell.github.io/2019/10/02/线性回归/&is_video=false&description=线性回归"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=线性回归&body=Check out this article: http://d2rivendell.github.io/2019/10/02/线性回归/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://d2rivendell.github.io/2019/10/02/线性回归/&title=线性回归"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://d2rivendell.github.io/2019/10/02/线性回归/&title=线性回归"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://d2rivendell.github.io/2019/10/02/线性回归/&title=线性回归"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://d2rivendell.github.io/2019/10/02/线性回归/&title=线性回归"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://d2rivendell.github.io/2019/10/02/线性回归/&name=线性回归&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#基本概念"><span class="toc-number">1.</span> <span class="toc-text">基本概念</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#梯度下降"><span class="toc-number">2.</span> <span class="toc-text">梯度下降</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#python代码实现"><span class="toc-number">3.</span> <span class="toc-text">python代码实现</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#normal-equation-正规方程"><span class="toc-number"></span> <span class="toc-text">normal equation  正规方程</span></a>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index my4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        线性回归
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">rivendell</span>
+      </span>
+      
+    <div class="postdate">
+        <time datetime="2019-10-02T15:08:16.000Z" itemprop="datePublished">2019-10-02</time>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link" href="/tags/ML/">ML</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h4 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h4><p><strong>监督学习：</strong> 根据样本特征和对应结果，对新的样本作出预测，如预测房价（回归问题）和是否是肿瘤（分类问题）</p>
+<p>假设方案函数为<br>$<br>h(\theta) = \theta_0 + \theta_1 x\quad(1)<br>$</p>
+<p>代价函数(cost function)</p>
+<p>$<br>J(\theta<em>0,\theta_1) =  \frac{1}{2m}\sum</em>{i=1}^{m}(h(\theta^{(i)} - y^{(i)})^2\quad(2)<br>$</p>
+<p>多维特征</p>
+<p>$X$是个 m x n的训练集<br>$X_j^{(i)}$ 表示第i个训练集的第j个特征</p>
+<p>若假设函数h支持多变量(参数有n+1个，训练集有n个)<br>$<br>h<em>{\theta}(x) = \theta_0 + \theta_1 x_1 + …+\theta_0 x_n\quad(3)<br>$<br>在此公式上引入$x_0= 1$,原始的参数和训练集都变成n+1<br>变成如下<br>$<br>h</em>{\theta}(x) = \theta_0 x_0 + \theta_1 x_1 + …+\theta_0 x_n\quad(4)<br>$<br>这样做的原因是求导的时候方便</p>
+<h4 id="梯度下降"><a href="#梯度下降" class="headerlink" title="梯度下降"></a>梯度下降</h4><p>如$\theta_n$为二维</p>
+<p>$<br>\begin{aligned} &amp; \text { repeat until convergence }{ \ \theta<em>{j} :=\theta</em>{j}-\alpha \frac{\partial}{\partial \theta<em>{j}} J\left(\theta</em>{0}, \theta_{1}\right) &amp;(\text { for } j=0 \text { and } j=1)  \<br>} \end{aligned}<br>$</p>
+<p>$\alpha​$是学习率</p>
+<p>$<br>\begin{array}{l}{\operatorname{temp} 0 :=\theta<em>{0}-\alpha \frac{\partial}{\partial \theta</em>{0}} J\left(\theta<em>{0}, \theta</em>{1}\right)} \ {\operatorname{temp} 1 :=\theta<em>{1}-\alpha \frac{\partial}{\partial \theta</em>{1}} J\left(\theta<em>{0}, \theta</em>{1}\right)} \ {\theta<em>{0} :=\operatorname{temp} \theta} \ {\theta</em>{1} :=\operatorname{tem} \mathrm{p} 1}\end{array}<br>​$<br>偏导数表示沿着各个纬度的方式去找到极小值，<script type="math/tex">\alpha</script>中途不需要改变，假设最开始时在最陡的坡上，导数假如是大于0，此时导数比较大（陡）， 通过梯度下降算法，<script type="math/tex">\theta</script>会减小，慢慢靠近坡底，同时该点的导数也会减小，通过一步步计算，导数慢慢变小，<script type="math/tex">\theta</script>减小的幅度越来越小，<script type="math/tex">\alpha</script>的值不能太小（下降到最低点需要太多步），或太大（找不到最低点）。</p>
+<p>对线性回归问题的代价函数进行偏导计算<br>$<br>\begin{array}{l}{h<em>{\theta}(x)=\theta</em>{0}+\theta<em>{1} x} \ {J(\theta)=\frac{1}{2 m} \sum</em>{i=1}^{m}\left(h_{\theta}\left(x^{(i)}\right)-y^{(i)}\right)^{2}}\end{array}<br>$</p>
+<p>$<br>\frac{\partial}{\partial \theta<em>{j}} J\left(\theta</em>{0}, \theta<em>{1}\right)=\frac{\partial}{\partial \theta</em>{j}} \frac{1}{2 m} \sum<em>{i=1}^{m}\left(h</em>{\theta}\left(x^{(i)}\right)-y^{(i)}\right)^{2}<br>$</p>
+<p>$<br>j = 0:<br>\frac{\partial}{\partial \theta<em>{0}} J\left(\theta</em>{0}, \theta<em>{1}\right)=\frac{1}{m} \sum</em>{i=1}^{m}\left(h_{\theta}\left(x^{(i)}\right)-y^{(i)}\right)<br>$</p>
+<p>$<br>j = 1:<br>\frac{\partial}{\partial \theta<em>{1}} J\left(\theta</em>{0}, \theta<em>{1}\right)=\frac{1}{m} \sum</em>{i=1}^{m}\left(\left(h_{\theta}\left(x^{(i)}\right)-y^{(i)}\right) \cdot x^{(i)}\right)<br>$</p>
+<p>对于多维变量线性回归<br>代价函数变为</p>
+<p>$<br>J\left(\theta<em>{0}, \theta</em>{1} \ldots \theta<em>{n}\right)=\frac{1}{2 m} \sum</em>{i=1}^{m}\left(h<em>{\theta}\left(x^{(i)}\right)-y^{(i)}\right)^{2}<br>$<br>其中$h</em>{\theta}(x)=\theta^{T} X=\theta<em>{0}+\theta</em>{1} x<em>{1}+\theta</em>{2} x<em>{2}+\ldots+\theta</em>{n} x<em>{n}$<code>,为特征集引入$$x_0 = 1$$(方便一起计算偏置b)后变成</code>$h</em>{\theta}(x)=\theta^{T} X=\theta<em>{0}x_0+\theta</em>{1} x<em>{1}+\theta</em>{2} x<em>{2}+\ldots+\theta</em>{n} x_{n}$<br>梯度下降公式为</p>
+<p>$<br>\theta<em>{j} :=\theta</em>{j}-\alpha \frac{1}{m} \sum<em>{i=1}^{m}\left(h</em>{\theta}\left(x^{(i)}\right)-y^{(i)}\right) x_{j}^{(i)}<br>$</p>
+<h4 id="python代码实现"><a href="#python代码实现" class="headerlink" title="python代码实现"></a>python代码实现</h4><figure class="highlight python"><table><tr><td class="code"><pre><span class="line">df = pd.read_csv(<span class="string">'ex1data1.txt'</span>, names=[<span class="string">'population'</span>, <span class="string">'profit'</span>])</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_X</span><span class="params">(df)</span>:</span><span class="comment">#读取特征</span></span><br><span class="line"></span><br><span class="line">    ones = pd.DataFrame(&#123;<span class="string">'ones'</span>: np.ones(len(df))&#125;)<span class="comment">#ones是m行1列的dataframe</span></span><br><span class="line">    data = pd.concat([ones, df], axis=<span class="number">1</span>)  <span class="comment"># 合并数据，根据列合并,相当于令每个特征集的x_0 = 1</span></span><br><span class="line">    <span class="keyword">return</span> data.iloc[:, :<span class="number">-1</span>].as_matrix()  <span class="comment"># 这个操作返回 ndarray,不是矩阵</span></span><br><span class="line"><span class="comment">#代价函数</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">lr_cost</span><span class="params">(theta, X, y)</span>:</span></span><br><span class="line"><span class="comment">#     """</span></span><br><span class="line"><span class="comment">#     X: R(m*n), m 样本数, n 特征数</span></span><br><span class="line"><span class="comment">#     y: R(m)</span></span><br><span class="line"><span class="comment">#     theta : R(n), 线性回归的参数</span></span><br><span class="line"><span class="comment">#     """</span></span><br><span class="line">    m = X.shape[<span class="number">0</span>]<span class="comment">#m为样本数</span></span><br><span class="line"></span><br><span class="line">    inner = X @ theta - y  <span class="comment"># R(m*1)，X @ theta等价于X.dot(theta)</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 1*m @ m*1 = 1*1 in matrix multiplication</span></span><br><span class="line">    <span class="comment"># but you know numpy didn't do transpose in 1d array, so here is just a</span></span><br><span class="line">    <span class="comment"># vector inner product to itselves</span></span><br><span class="line">    square_sum = inner.T @ inner</span><br><span class="line">    cost = square_sum / (<span class="number">2</span> * m)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> cost</span><br><span class="line">    </span><br><span class="line"><span class="comment">#批量操作</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">gradient</span><span class="params">(theta, X, y)</span>:</span></span><br><span class="line">    m = X.shape[<span class="number">0</span>]</span><br><span class="line"></span><br><span class="line">    inner = X.T @ (X @ theta - y)  <span class="comment"># (m,n).T @ (m, 1) -&gt; (n, 1)，X @ theta等价于X.dot(theta)</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> inner / m</span><br><span class="line">    </span><br><span class="line"><span class="comment">#批量梯度下降函数(一次性对所有样本进行梯度下降算法)</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">batch_gradient_decent</span><span class="params">(theta, X, y, epoch, alpha=<span class="number">0.01</span>)</span>:</span></span><br><span class="line"><span class="comment">#   拟合线性回归，返回参数和代价</span></span><br><span class="line"><span class="comment">#     epoch: 批处理的轮数</span></span><br><span class="line"><span class="comment">#     """</span></span><br><span class="line">    cost_data = [lr_cost(theta, X, y)]</span><br><span class="line">    _theta = theta.copy()  <span class="comment"># 拷贝一份，不和原来的theta混淆</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> _ <span class="keyword">in</span> range(epoch):</span><br><span class="line">        _theta = _theta - alpha * gradient(_theta, X, y)</span><br><span class="line">        cost_data.append(lr_cost(_theta, X, y))</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> _theta, cost_data</span><br><span class="line">    </span><br><span class="line"><span class="comment">#另外一种 梯度下降方法（比较啰嗦，但是是按照公式一步步完成）</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">gradientDescent</span><span class="params">(X, y, theta, alpha, iters)</span>:</span></span><br><span class="line">    temp = np.matrix(np.zeros(theta.shape))</span><br><span class="line">    parameters = int(theta.ravel().shape[<span class="number">1</span>])</span><br><span class="line">    cost = np.zeros(iters)</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(iters):</span><br><span class="line">        error = (X * theta.T) - y</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">for</span> j <span class="keyword">in</span> range(parameters):</span><br><span class="line">            term = np.multiply(error, X[:,j])</span><br><span class="line">            temp[<span class="number">0</span>,j] = theta[<span class="number">0</span>,j] - ((alpha / len(X)) * np.sum(term))</span><br><span class="line">            </span><br><span class="line">        theta = temp</span><br><span class="line">        cost[i] = computeCost(X, y, theta)</span><br><span class="line">        </span><br><span class="line">    <span class="keyword">return</span> theta, cost</span><br></pre></td></tr></table></figure>
+<h3 id="normal-equation-正规方程"><a href="#normal-equation-正规方程" class="headerlink" title="normal equation  正规方程"></a>normal equation  正规方程</h3><p>通过令代价函数的导数的为0求出极值点</p>
+<p>$<br>\frac{\partial}{\partial \theta<em>{j}} J\left(\theta</em>{j}\right)=0<br>$</p>
+<p>得出$\theta=\left(X^{T} X\right)^{-1} X^{T} y$ （其中$X$包含了$x_0 = 1$）</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 正规方程</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">normalEqn</span><span class="params">(X, y)</span>:</span></span><br><span class="line">    theta = np.linalg.inv(X.T@X)@X.T@y<span class="comment">#X.T@X等价于X.T.dot(X)</span></span><br><span class="line">    <span class="keyword">return</span> theta</span><br></pre></td></tr></table></figure>
+
+  </div>
+</article>
+
+    <div class="blog-post-comments">
+        <div id="disqus_thread">
+            <noscript>Please enable JavaScript to view the comments.</noscript>
+        </div>
+    </div>
+
+
+
+    </div>
+    
+      <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about">About</a></li>
+         
+          <li><a href="/archives">Writing</a></li>
+         
+          <li><a href="/tags">tags</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#基本概念"><span class="toc-number">1.</span> <span class="toc-text">基本概念</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#梯度下降"><span class="toc-number">2.</span> <span class="toc-text">梯度下降</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#python代码实现"><span class="toc-number">3.</span> <span class="toc-text">python代码实现</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#normal-equation-正规方程"><span class="toc-number"></span> <span class="toc-text">normal equation  正规方程</span></a>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://d2rivendell.github.io/2019/10/02/线性回归/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://d2rivendell.github.io/2019/10/02/线性回归/&text=线性回归"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://d2rivendell.github.io/2019/10/02/线性回归/&title=线性回归"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://d2rivendell.github.io/2019/10/02/线性回归/&is_video=false&description=线性回归"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=线性回归&body=Check out this article: http://d2rivendell.github.io/2019/10/02/线性回归/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://d2rivendell.github.io/2019/10/02/线性回归/&title=线性回归"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://d2rivendell.github.io/2019/10/02/线性回归/&title=线性回归"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://d2rivendell.github.io/2019/10/02/线性回归/&title=线性回归"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://d2rivendell.github.io/2019/10/02/线性回归/&title=线性回归"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://d2rivendell.github.io/2019/10/02/线性回归/&name=线性回归&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+    
+    <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy; 2020 leon
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about">About</a></li>
+         
+          <li><a href="/archives">Writing</a></li>
+         
+          <li><a href="/tags">tags</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"log":false,"model":{"jsonPath":"/live2dw/assets/hijiki.model.json"},"display":{"position":"right","width":75,"height":150},"mobile":{"show":true}});</script></body>
+</html>
+<!-- styles -->
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+<link rel="stylesheet" href="/lib/justified-gallery/css/justifiedGallery.min.css">
+
+<!-- jquery -->
+<script src="/lib/jquery/jquery.min.js"></script>
+<script src="/lib/justified-gallery/js/jquery.justifiedGallery.min.js"></script>
+<script src="/js/main.js"></script>
+<!-- search -->
+
+<!-- Google Analytics -->
+
+    <script type="text/javascript">
+        (function(i,s,o,g,r,a,m) {i['GoogleAnalyticsObject']=r;i[r]=i[r]||function() {
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+        ga('create', 'UA-127325381-1', 'auto');
+        ga('send', 'pageview');
+    </script>
+
+<!-- Baidu Analytics -->
+
+<!-- Disqus Comments -->
+
+    <script type="text/javascript">
+        var disqus_shortname = 'leonhwa';
+
+        (function(){
+            var dsq = document.createElement('script');
+            dsq.type = 'text/javascript';
+            dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        }());
+    </script>
+
+

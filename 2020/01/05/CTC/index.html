@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="description" content="CTC是序列标注问题中的一种损失函数。 传统序列标注算法需要每一时刻输入与输出符号完全对齐。而CTC扩展了标签集合，添加空元素。 ctc用于训练阶段 CTC loss要点：  矩阵 𝛼(前向变量)用于计算loss 矩阵𝛽 (后向变量)用来方便计算gradients.  符号表示：  $yk^t$代表输出序列在第t步输出为k字符的概率，举个简单的例子：当输出的序列为$(a-ab-)$时，$y_a">
+<meta name="keywords" content="DL">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CTC">
+<meta property="og:url" content="http://d2rivendell.github.io/2020/01/05/CTC/index.html">
+<meta property="og:site_name" content="rivendell">
+<meta property="og:description" content="CTC是序列标注问题中的一种损失函数。 传统序列标注算法需要每一时刻输入与输出符号完全对齐。而CTC扩展了标签集合，添加空元素。 ctc用于训练阶段 CTC loss要点：  矩阵 𝛼(前向变量)用于计算loss 矩阵𝛽 (后向变量)用来方便计算gradients.  符号表示：  $yk^t$代表输出序列在第t步输出为k字符的概率，举个简单的例子：当输出的序列为$(a-ab-)$时，$y_a">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://d2rivendell.github.io/images/ctc_9.png">
+<meta property="og:image" content="http://d2rivendell.github.io/images/ctc_blank.png">
+<meta property="og:image" content="http://d2rivendell.github.io/images/ctc_same.png">
+<meta property="og:image" content="http://d2rivendell.github.io/images/ctc_other.png">
+<meta property="og:image" content="http://d2rivendell.github.io/images/ctc_10.png">
+<meta property="og:image" content="http://d2rivendell.github.io/images/ctc_partial.png">
+<meta property="og:image" content="http://d2rivendell.github.io/images/beam_search.png">
+<meta property="og:image" content="http://d2rivendell.github.io/images/beam_search_2.png">
+<meta property="og:image" content="http://d2rivendell.github.io/images/beam_search_3.png">
+<meta property="og:updated_time" content="2020-10-23T09:07:38.912Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="CTC">
+<meta name="twitter:description" content="CTC是序列标注问题中的一种损失函数。 传统序列标注算法需要每一时刻输入与输出符号完全对齐。而CTC扩展了标签集合，添加空元素。 ctc用于训练阶段 CTC loss要点：  矩阵 𝛼(前向变量)用于计算loss 矩阵𝛽 (后向变量)用来方便计算gradients.  符号表示：  $yk^t$代表输出序列在第t步输出为k字符的概率，举个简单的例子：当输出的序列为$(a-ab-)$时，$y_a">
+<meta name="twitter:image" content="http://d2rivendell.github.io/images/ctc_9.png">
+    
+    
+        
+          
+              <link rel="shortcut icon" href="/images/favicon.ico">
+          
+        
+        
+          
+            <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+          
+        
+        
+          
+            <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+          
+        
+    
+    <!-- title -->
+    <title>CTC</title>
+    <!-- styles -->
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- persian styles -->
+    
+      <link rel="stylesheet" href="/css/rtl.css">
+    
+    <!-- rss --><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+    
+    
+</head>
+
+<body class="max-width mx-auto px3 ltl">    
+      <!-- hexo-inject:begin --><!-- hexo-inject:end --><div id="header-post">
+  <a id="menu-icon" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about">About</a></li>
+         
+          <li><a href="/archives">Writing</a></li>
+         
+          <li><a href="/tags">tags</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" href="/2019/10/25/反向传播公式总结/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://d2rivendell.github.io/2020/01/05/CTC/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://d2rivendell.github.io/2020/01/05/CTC/&text=CTC"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://d2rivendell.github.io/2020/01/05/CTC/&title=CTC"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://d2rivendell.github.io/2020/01/05/CTC/&is_video=false&description=CTC"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=CTC&body=Check out this article: http://d2rivendell.github.io/2020/01/05/CTC/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://d2rivendell.github.io/2020/01/05/CTC/&title=CTC"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://d2rivendell.github.io/2020/01/05/CTC/&title=CTC"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://d2rivendell.github.io/2020/01/05/CTC/&title=CTC"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://d2rivendell.github.io/2020/01/05/CTC/&title=CTC"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://d2rivendell.github.io/2020/01/05/CTC/&name=CTC&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#CTC-loss"><span class="toc-number">1.</span> <span class="toc-text">CTC loss</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#前向后向算法（训练阶段）"><span class="toc-number">1.1.</span> <span class="toc-text">前向后向算法（训练阶段）</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#向前传播公式："><span class="toc-number">1.1.1.</span> <span class="toc-text">向前传播公式：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#向后传播公式："><span class="toc-number">1.1.2.</span> <span class="toc-text">向后传播公式：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#向前向后公式结合"><span class="toc-number">1.1.3.</span> <span class="toc-text">向前向后公式结合</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#导数"><span class="toc-number">2.</span> <span class="toc-text">导数</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#防止参数underflow"><span class="toc-number">2.1.</span> <span class="toc-text">防止参数underflow</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Softmax-函数求导"><span class="toc-number">2.2.</span> <span class="toc-text">Softmax 函数求导</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ctc求导"><span class="toc-number">2.3.</span> <span class="toc-text">ctc求导</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Beam-search-decoding"><span class="toc-number">3.</span> <span class="toc-text">Beam search decoding</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#疑问："><span class="toc-number">3.0.1.</span> <span class="toc-text">疑问：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#常规束算法："><span class="toc-number">3.0.2.</span> <span class="toc-text">常规束算法：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#改进束算法："><span class="toc-number">3.0.3.</span> <span class="toc-text">改进束算法：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#公式分析"><span class="toc-number">3.0.4.</span> <span class="toc-text">公式分析</span></a></li></ol></li></ol></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index my4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        CTC
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">rivendell</span>
+      </span>
+      
+    <div class="postdate">
+        <time datetime="2020-01-05T07:15:00.000Z" itemprop="datePublished">2020-01-05</time>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link" href="/tags/DL/">DL</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <p>CTC是序列标注问题中的一种损失函数。</p>
+<p>传统序列标注算法需要每一时刻输入与输出符号完全对齐。而CTC扩展了标签集合，添加空元素。</p>
+<p>ctc用于训练阶段</p>
+<h2 id="CTC-loss"><a href="#CTC-loss" class="headerlink" title="CTC loss"></a>CTC loss</h2><p>要点：</p>
+<ol>
+<li>矩阵 𝛼(前向变量)用于计算loss</li>
+<li>矩阵𝛽 (后向变量)用来方便计算gradients.</li>
+</ol>
+<p>符号表示：</p>
+<ol>
+<li><p>$y<em>k^t$代表输出序列在第t步输出为<strong>k字符</strong>的概率，举个简单的例子：当输出的序列为$(a-ab-)$时，$y_a^3$ 代表了在第3步输出的字母为a的概率；(下面的例子用apple 加</em> 即 a, p, l ,e, _,五个字符举例， 但是映射表中对应的字符会有多个)</p>
+</li>
+<li><p>$p(\pi | x)$代表了给定输入$x$，输出路径为 $\pi$ 的概率；</p>
+<p>由于假设在每一个时间步输出的label的概率都是相互独立的，那么 $p(\pi | x)$用公式来表示为 :</p>
+</li>
+</ol>
+<script type="math/tex; mode=display">p(\pi | x) = \prod_{t=1}^{T}(y_k^t) \tag{1}</script><ol>
+<li><p>$\mathscr{F}$ 代表一种多对一的映射，将输出路径 $\pi$ 映射到 标签序列 $l$ 的一种变换，举个简单的例子 $\mathscr{F}(a-ab-) = \mathscr{F}(-aa—abb) = aab$（其中-代表了空格)</p>
+</li>
+<li><p>$p(l \mid  x)$代表了给定输入$x$，输出为序列$l$的概率:</p>
+<p>因此输出的序列为 $l$ 的概率可以表示为所有输出的路径 $\pi$ 映射后的序列为 $l$ 的概率之和，用公式表示为:</p>
+</li>
+</ol>
+<pre><code>$$p(l | x) = \sum_{\pi \subseteq {\mathscr{F}^{-1}(l)}} p(\pi|x) \tag{2}$$
+</code></pre><p>   其中$\pi \subseteq {\mathscr{F}^{-1}}(l) $ 表示在路径有多个路径$\pi$ 对应相同的输出序列$l$,$\mathscr{F}(\pi) = l$</p>
+<h3 id="前向后向算法（训练阶段）"><a href="#前向后向算法（训练阶段）" class="headerlink" title="前向后向算法（训练阶段）"></a>前向后向算法（训练阶段）</h3><p>向前算法要解决的就是对真实输出序列的所有路径概率求和（公式2），直接暴力计算$p(l\mid x)$的复杂度非常高，作者借鉴HMM的Forward-Backward算法思路，利用动态规划算法求解。</p>
+<p>为了更形象表示问题的搜索空间，用X轴表示时间序列， Y轴表示输出序列，并把输出序列做标准化处理，输出序列中间和头尾都加上blank，用$l$表示最终标签，$l’$表示扩展后的形式，则由$2|l| + 1 = 2|l’|$，比如$l=apple \Rightarrow l’= _a_p_p_l_e_$</p>
+<p>为了理解向前算法， 可以构建表格来理解，将真实标签序列$l$转换为$l’$作为纵坐标（由上至下增大），横轴为时间序列（由左至右增大）。</p>
+<p>约束条件：</p>
+<ol>
+<li>转换只能往右下方向，其他方向不允许</li>
+<li>相同的字符之间起码要有一个空字符</li>
+<li>非空字符不能跳过</li>
+<li>起点必须从前两个字符开始</li>
+<li>终点必须落在结尾两个字符</li>
+</ol>
+<p><img src="/images/ctc_9.png" alt="ctc_1"></p>
+<p>相关细节可以参考<a href="https://xiaodu.io/ctc-explained/" target="_blank" rel="noopener">https://xiaodu.io/ctc-explained/</a></p>
+<h4 id="向前传播公式："><a href="#向前传播公式：" class="headerlink" title="向前传播公式："></a>向前传播公式：</h4><p><strong>符号表示</strong>：</p>
+<p>$ seq(s)$： 纵轴由上往下第s个字符</p>
+<p>$\alpha_t(s) $:   t时刻经过节点s的全部前缀路径的概率总和</p>
+<ol>
+<li><p>当seq(s)为空符号或seq(s) 等于seq(s-1)时</p>
+<script type="math/tex; mode=display">\alpha_t(s) = (\alpha_{t-1}(s) + \alpha_{t-1}(s-1)) \cdot y_{seq(s)}^t</script></li>
+</ol>
+<p><img src="/images/ctc_blank.png" alt="ctc_blank" style="zoom:40%;"></p>
+<p><img src="/images/ctc_same.png" alt="ctc_same" style="zoom:40%;"></p>
+<ol>
+<li><p>否则：</p>
+<script type="math/tex; mode=display">\alpha_t(s) = (\alpha_{t-1}(s) + \alpha_{t-1}(s-1) +\alpha_{t-1}(s-2)) \cdot y_{seq(s)}^t</script></li>
+</ol>
+<p><img src="/images/ctc_other.png" alt="ctc_other" style="zoom:40%;"></p>
+<ol>
+<li><p>初始：</p>
+<script type="math/tex; mode=display">\alpha_1(1) = y_{\_}^{1}, \alpha_1(2) = y_{seq(2)}^{1}, \alpha_1(s) = 0, \forall s > 2</script><p><strong>CTC Loss</strong></p>
+</li>
+</ol>
+<p>对于上图apple词汇的例子</p>
+<script type="math/tex; mode=display">- \boldsymbol{ln}(p(apple | x)) =  -\boldsymbol{ln}(\alpha_8(10) + \alpha_8(11))</script><p>通用公式表示为:</p>
+<script type="math/tex; mode=display">- \boldsymbol{ln}(p(l | x)) =  -\boldsymbol{ln}(\alpha_T(|l'| - 1) + \alpha_T(|l'|)) \tag{3}</script><h4 id="向后传播公式："><a href="#向后传播公式：" class="headerlink" title="向后传播公式："></a>向后传播公式：</h4><p>基本和向前公式一样 ，不过是反方向的</p>
+<p><strong>符号表示</strong>：</p>
+<p>$\beta_t(s) $:   t时刻经过节点s的全部后缀路径的概率总和</p>
+<ol>
+<li><p>当seq(s)为空符号或seq(s) 等于seq(s-1)时</p>
+<script type="math/tex; mode=display">\beta_t(s) = (\beta_{t+1}(s) + \beta_{t+1}(s+1)) \cdot y_{seq(s)}^t</script></li>
+<li><p>否则：</p>
+<script type="math/tex; mode=display">\beta_t(s) = (\beta_{t+1}(s) + \beta_{t+1}(s+1) +\beta_{t+1}(s+2)) \cdot  y_{seq(s)}^t</script></li>
+<li><p>初始：</p>
+<script type="math/tex; mode=display">\beta_T(|l'|) = y_{\_}^{T}, \beta_T(|l'| - 1) = y_{seq(|l'| - 1)}^{T}, \beta_T(s) = 0, \forall s < |l'| - 1</script><p><strong>CTC Loss</strong></p>
+</li>
+</ol>
+<p>对于上图apple词汇的例子</p>
+<script type="math/tex; mode=display">- \boldsymbol{ln}(p(apple | x)) =  -\boldsymbol{ln}(\beta_1(1) + \beta_2(2))</script><p>通用公式表示为:</p>
+<script type="math/tex; mode=display">- \boldsymbol{ln}(p(l | x)) =  -\boldsymbol{ln}(\beta_1(1) + \beta_2(2)) \tag{4}</script><h4 id="向前向后公式结合"><a href="#向前向后公式结合" class="headerlink" title="向前向后公式结合"></a>向前向后公式结合</h4><p>在任意t时刻，便利所有的s,即可得到全部路径的总和</p>
+<script type="math/tex; mode=display">\boldsymbol{p}(\boldsymbol{l} | \boldsymbol{x})=\sum_{\boldsymbol{s}=1}^{\left|\boldsymbol{l}^{\prime}\right|} \frac{\boldsymbol{\alpha}_{\mathrm{t}}(\boldsymbol{s}) \boldsymbol{\beta}_{\boldsymbol{t}}(\boldsymbol{s})}{\boldsymbol{y}_{l_{\boldsymbol{s}}^{'}}^{t}} \tag{5}</script><p><strong>公式中的t是任选的</strong></p>
+<p>(除以 $y<em>{l</em>{s}^{‘}}^t$ 因为在 $\alpha$ 和 $\beta$ 中乘了两次)。</p>
+<p><img src="/images/ctc_10.png" alt="ctc_10"></p>
+<h2 id="导数"><a href="#导数" class="headerlink" title="导数"></a>导数</h2><h3 id="防止参数underflow"><a href="#防止参数underflow" class="headerlink" title="防止参数underflow"></a>防止参数underflow</h3><p>在Alex Graves的<a href="http://www.cs.toronto.edu/~graves/icml_2006.pdf" target="_blank" rel="noopener">论文</a>中, 为了防止参数underflow，要对$\alpha_t(s), \beta_t(s)$进行标准化转换</p>
+<script type="math/tex; mode=display">C_{t} \stackrel{\text { def }}{=} \sum_{s} \alpha_{t}(s), \quad \quad \hat{\alpha}_{t}(s) \stackrel{\text { def }}{=} \frac{\alpha_{t}(s)}{C_{t}}</script><script type="math/tex; mode=display">D_{t} \stackrel{\text { def }}{=} \sum_{s} \alpha_{t}(s), \quad \quad \hat{\alpha}_{t}(s) \stackrel{\text { def }}{=} \frac{\alpha_{t}(s)}{D_{t}}</script><p>Loss 函数也由$- \boldsymbol{ln}(p(l | x)) =  -\boldsymbol{ln}(\alpha_T(|l’| - 1) + \alpha_T(|l’|))$变成了:</p>
+<p>$- \boldsymbol{ln}(p(l | x)) =  - \sum_{t = 1}^{t} ln(C_t)$</p>
+<h3 id="Softmax-函数求导"><a href="#Softmax-函数求导" class="headerlink" title="Softmax 函数求导"></a>Softmax 函数求导</h3><p>设 $X = [x_1,x_2,…,x_n]$ ，$Y = [y_1, y_2,…,y_n], Y = softmax(X)$ </p>
+<script type="math/tex; mode=display">y_i = \frac{e^{x_i}}{\sum_{j = 1}e^{x_j}} \tag{6}</script><p>(1) 当 $i = j$ 时</p>
+<script type="math/tex; mode=display">\begin{aligned} \frac{\partial y_{i}}{\partial x_{j}} &=\frac{\partial y_{i}}{\partial x_{i}} \\ &=\frac{\partial}{\partial x_{i}}\left(\frac{e^{x_{i}}}{\sum_{k} e^{x_{k}}}\right) \\ &=\frac{\left(e^{x_{i}}\right)^{\prime}\left(\sum_{k} e^{x_{k}}\right)-e^{x_{i}}\left(\sum_{k} e^{x_{k}}\right)^{\prime}}{\left(\sum_{k} e^{x_{k}}\right)^{2}} \\ &=\frac{e^{x_{i}} \cdot\left(\sum_{k} e^{x_{k}}\right)^{2}}{\left(\sum_{k} e^{x_{k}}\right)^{2}} \\ &=\frac{e^{x_{i}} \cdot\left(\sum_{k} e^{x_{k}}\right)}{\left(\sum_{k} e^{x_{k}}\right)^{2}}-\frac{e^{x_{i}} \cdot e^{x_{i}}}{\sum_{k} e^{x_{k}}} \\ &=\frac{e^{x_{i}} \cdot\left(\sum_{i} \cdot y_{i}\right.}{\sum_{k} e^{x_{k}}} \cdot \frac{e^{x_{i}}}{\sum_{k} e_{k}^{x_{k}}} \\ &=y_{i}\left(1-y_{i}\right) \end{aligned}</script><p>(1) 当 $i \neq  j$ 时</p>
+<script type="math/tex; mode=display">\begin{aligned} \frac{\partial y_{i}}{\partial x_{j}} &=\frac{\partial}{\partial x_{j}}\left(\frac{e^{x_{i}}}{\sum_{k} e^{x_{k}}}\right) \\ &=\frac{\left(e^{x_{i}}\right)^{\prime}\left(\sum_{k} e^{x_{k}}\right)}{\left(\sum_{k} e^{x_{k}}\right)^{2}} \\ &=\frac{0 \cdot\left(\sum_{k} e^{x_{k}}\right)-e^{x_{i}} \cdot e^{x_{j}}}{\left(\sum_{k} e^{x_{k}}\right)^{2}} \\ &=\frac{-e^{x_{i}} \cdot e^{x_{j}}}{\left(\sum_{k} e^{x_{k}}\right)^{2}} \\ &=-\frac{e^{x_{i}}}{\sum_{k} e^{x_{k}}} \cdot \frac{e^{x_{j}}}{\sum_{k} e^{x_{k}}} \\ &=-y_{i} \cdot y_{j} \end{aligned}</script><p>综上所述：$\frac{\partial y<em>{i}}{\partial x</em>{j}}=\left{\begin{array}{l}{=y<em>{i}-y</em>{i} y<em>{i}},当i = j  \ {=0-y</em>{i} \cdot y_{j}} 当i \neq j \end{array}\right.$</p>
+<h3 id="ctc求导"><a href="#ctc求导" class="headerlink" title="ctc求导"></a>ctc求导</h3><p>由上面公式3公式5：</p>
+<script type="math/tex; mode=display">- \boldsymbol{ln}(p(l | x)) =  -\boldsymbol{ln}(\alpha_T(|l'| - 1) + \alpha_T(|l'|)) \tag{3}</script><script type="math/tex; mode=display">\boldsymbol{p}(\boldsymbol{l} | \boldsymbol{x})=\sum_{\boldsymbol{s}=1}^{\left|\boldsymbol{l}^{\prime}\right|} \frac{\boldsymbol{\alpha}_{\mathrm{t}}(\boldsymbol{s}) \boldsymbol{\beta}_{\boldsymbol{t}}(\boldsymbol{s})}{\boldsymbol{y}_{l_{\boldsymbol{s}}^{'}}^{t}} (t是任意的) \tag{5}</script><p>注意到 这里笔记的</p>
+<p>x——RNN(x) —&gt;$u_k^t$ —-softmax(u)—-&gt;  $y_k^t$   (k表示的是字符，是模型中字母映射表中的一个，$t \subseteq  T$，$T$是rnn输出的序列的个数)</p>
+<script type="math/tex; mode=display">\frac{\partial \ln (p(\mathbf{l} | \mathbf{x}))}{\partial y_{k}^{t}}=\frac{1}{p(\mathbf{l} | \mathbf{x})} \frac{\partial p(\mathbf{l} | \mathbf{x})}{\partial y_{k}^{t}} \tag{7}</script><p>定义$lab(l,k) = {s: l_s^{‘} = k}$ ， $ lab(l,k)$可能为空, 因为RNN输出的序列的长度T 经过ctc 转换后变为$l$, $l \leqslant  T$<br>字母表中的字符k 不一定会在ctc映射的文本中。</p>
+<script type="math/tex; mode=display">\frac{\partial p(l|x)}{ \partial y_k^t} = \frac{1}{y_k^{t^2}} \sum_{s \in lab(l,k)} \alpha_t(s) \beta_t(x) \tag{8}</script><p>具体求导如下：</p>
+<p><img src="/images/ctc_partial.png" alt="ctc_partial"></p>
+<p>根据前面所说的防止underflow 公式可以转换如下：</p>
+<script type="math/tex; mode=display">-\frac{\partial ln(p(l|x))}{ \partial u_k^t}=y_{k}^{t}-\frac{1}{y_{k}^{t} Z_{t}} \sum_{s \in \operatorname{lab}(\mathbf{l}, k)} \hat{\alpha}_{t}(s) \hat{\beta}_{t}(s) \tag{9}</script><p>其中</p>
+<p>$p(l|x) = Z<em>{t} \stackrel{\text { def }}{=} \sum</em>{s=1}^{\left|1^{\prime}\right|} \frac{\hat{\alpha}<em>{t}(s) \hat{\beta}</em>{t}(s)}{y<em>{1</em>{s}^{t}}^{t}} \tag{10}$ </p>
+<p>和右边的</p>
+<p>$ \sum_{s \in lab(l,k)} \alpha_t(s) \beta_t(x) \tag{11}$</p>
+<p>是不一样的，因为式11 是建立一个大小为【映射表长度， 输出序列场地】的矩阵， ctc映射后的字符之外的设为0，其他的根据$\hat{\alpha}<em>{t}(s) \hat{\beta}</em>{t}(s)$累加，而$p(l|x)$是一个常数</p>
+<p>具体代码参照 <a href="https://github.com/d2rivendell/stanford-ctc" target="_blank" rel="noopener">stanford-ctc</a></p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment">#params 为输出序列 (n, m) n为映射表中字母表个数， m为输出序列个数</span></span><br><span class="line"><span class="comment"># L 为 L = 2 * 真实词汇长度 + 1</span></span><br><span class="line">grad = np.zeros(params.shape) <span class="comment"># 包含了其所以的字母</span></span><br><span class="line">ab = alphas * betas <span class="comment">#和真实词汇的字母有关</span></span><br><span class="line"><span class="keyword">for</span> s <span class="keyword">in</span> xrange(L):</span><br><span class="line">    <span class="comment"># blank</span></span><br><span class="line">    <span class="keyword">if</span> s % <span class="number">2</span> == <span class="number">0</span>:</span><br><span class="line">        grad[blank, :] += ab[s, :]</span><br><span class="line">        ab[s, :] = ab[s, :] / params[blank, :]</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        grad[seq[(s - <span class="number">1</span>) / <span class="number">2</span>], :] += ab[s, :]</span><br><span class="line">        ab[s, :] = ab[s, :] / (params[seq[(s - <span class="number">1</span>) / <span class="number">2</span>], :])</span><br><span class="line">absum = np.sum(ab, axis=<span class="number">0</span>)<span class="comment">#常数</span></span><br><span class="line">grad = params - grad / (params * absum)</span><br></pre></td></tr></table></figure>
+<h2 id="Beam-search-decoding"><a href="#Beam-search-decoding" class="headerlink" title="Beam search decoding"></a>Beam search decoding</h2><p>解码是在 预测阶段，</p>
+<blockquote>
+<p>符号表示：</p>
+<p>$\rho$:  去除了空格和重复字符的输出标签序列</p>
+<p>$\rho^e$:字符串$\rho$的结尾字符</p>
+<p>$\hat{\rho}$:字符串$\rho$ 除去结尾$\rho^e$后的字符</p>
+<p>$\gamma(\rho, t)$: 在t时刻网络输出的假设序列为$\rho$(已经去除空格和折叠)的概率</p>
+<p>$\gamma^{-1}(\rho, t)$:   $t$时刻网络输出blank空字符, 输出标签序列为$\rho$的概率</p>
+<p>$\gamma^{+1}(\rho, t)$:   $t$时刻网络输出非空字符,输出标签序列为$\rho$的概率</p>
+</blockquote>
+<p>定义：</p>
+<script type="math/tex; mode=display">\gamma(\rho, t) = \gamma^{-1}(\rho, t) + \gamma^{+1}(\rho, t) \tag{12}</script><script type="math/tex; mode=display">\gamma^{-1}(\rho, t) = \gamma(\rho, t - 1) y_b^t \tag{13}</script><p>$y_b^t $表示$t$时刻输出blank空字符的概率</p>
+<h4 id="疑问："><a href="#疑问：" class="headerlink" title="疑问："></a>疑问：</h4><p>为什么要区分t时刻的字符是不是空的呢？ 如果是为了折叠和去空格，  为什么不区分t时刻的字符和$\rho^e$相等的情况?</p>
+<p>答案当然不是为了折叠和去重。 下面的讨论会给出答案</p>
+<h4 id="常规束算法："><a href="#常规束算法：" class="headerlink" title="常规束算法："></a>常规束算法：</h4><p>常规束算法在每个输出中计算当前的假设路径， 当前假设路径是基于上个假设路径，而且不折叠重复字符和移除空格，算法会选择其中得分最高的几种路径作为当前路径，如下图（alphabet of  ${\epsilon, a, b}$ and a beam size of three）：</p>
+<p><img src="/images/beam_search.png" alt="beam_search"></p>
+<p>图片<a href="https://distill.pub/2017/ctc/" target="_blank" rel="noopener">来源</a>（下同）</p>
+<h4 id="改进束算法："><a href="#改进束算法：" class="headerlink" title="改进束算法："></a>改进束算法：</h4><p>上面的算法无法 处理多个对齐映射到同一输出这种情况，  如果要处理多个对齐映射到同一输出这种情况, 处理的方式是：不保留束中的对齐列表，而是存储折叠重复字符并移除空格后的输出前缀。</p>
+<p>但是，移除空格$\epsilon$会有个问题 如下图中：</p>
+<p> T=2时刻 第二个$[a,a] \Rightarrow [a]$ ，$[a , \epsilon] \Rightarrow [a]$ , 有两种场景去重和移除空格$\epsilon$后都输出路径为$a$, 把该假设输出路径和概率存储起来</p>
+<p> T=3时刻，如果碰到结合的还是$a$，结合上一个输出$a$，岂不是也是$[a,a] \Rightarrow [a]$ ？，看样子好像没有问题，但是在T=2时刻假设输出路径$a$ 的所有未折叠路径中有一个是：$[a , \epsilon] \Rightarrow [a]$  最后一个是空格，假设我们在T=2时刻不作折叠去空格操作，结合T=3时刻的$a$: $[a , \epsilon, a] \Rightarrow [aa]$ , 本来是输出$[aa]$的呀，却因为折叠去空格操作变成输出$[a]$, 因为这个过程中缺失了路径中最后一个为空格的信息。 下图中T=3中$a$结合$a$, 会生成T=4中$[a], [aa]$两个路径</p>
+<p><img src="/images/beam_search_2.png" alt="beam_search2"></p>
+<p>为了实现上图的输出效果，需要怎么做呢，如下图：</p>
+<p><img src="/images/beam_search_3.png" alt="beam_search2"></p>
+<p>我们只需统计之前以空白标记$\epsilon$结尾的所有路径的概率（位于字符中间的$\epsilon$也要统计）。同样的，如果是扩展到$[a]$，那我们计算的就是不以$\epsilon$结尾的所有路径概率。我们需要跟踪当前输出在搜索树中前两处输出。无论是以ϵ结尾还是不以ϵ结尾，如果我们在剪枝时为每一种假设做好得分排序，我们就能在计算中使用组合分数。</p>
+<p>就得出公式:</p>
+<script type="math/tex; mode=display">\gamma(\rho, t) = \gamma^{-1}(\rho, t) + \gamma^{+1}(\rho, t) \tag{12}</script><p>​    <script type="math/tex">\gamma^{-1}(\rho, t) = \gamma(\rho, t - 1) y_b^t \tag{13}</script></p>
+<p>​           <script type="math/tex">\gamma^{+}(\rho, t)=\gamma^{+}(\rho, t-1) y_{\rho^{e}}^{t}+\left\{\begin{array}{l}{\gamma(\hat{\rho}, t-1) y_{\rho^e}^{t}, \quad if\quad \rho^{\mathrm{e}} \neq \hat{\rho}^{e}} \\ {\gamma^{-}(\hat{\rho}, t-1) y_{\rho^e}^{t} ,  if\quad \rho^{\mathrm{e}} == \hat{\rho}^{e}} \tag{14} \end{array}\right.</script></p>
+<h4 id="公式分析"><a href="#公式分析" class="headerlink" title="公式分析"></a>公式分析</h4><ol>
+<li><p>上式13中$\gamma(\rho, t - 1) y<em>b^t$和式14的<strong>加号左边</strong>$\gamma^{+1}(\rho, t - 1) y</em>{\rho^e}^t$表示了$t$时刻和$t-1$时刻的折叠输出是<strong>一样</strong>的。分别表示：</p>
+<p>$t-1$时刻的折叠字符和 $t$时刻空格组合成的路径 折叠后不变的概率（如上所说需要记录）  和   $t-1$时刻的k字符(非空格)组合而成的折叠字符和 $t$时刻相同的k字符合成的路径折叠后不变的概率。有点拗口😅</p>
+</li>
+</ol>
+<ol>
+<li>式14<strong>加号右边</strong>表示了$t$时刻和$t-1$时刻的折叠输出是<strong>不一样</strong>， 有两种情况，而且是互斥的：</li>
+</ol>
+<p>​       1).  当$t-1$时刻的折叠路径(注意是折叠过的)的最后一个字符字符(非空)和$t$时刻的字符不一样时， 肯定会生成不同折叠输出, 例如: </p>
+<p>​      $t-1$时刻:</p>
+<p>​       $[a,b] \Rightarrow ab$，   $[ab,\epsilon] \Rightarrow ab$</p>
+<p>​       $t$时刻, 不能是$b$ :</p>
+<p>​      $[ab, c] \Rightarrow abc$</p>
+<p>​       2).  当$t-1$时刻的折叠路径(注意是折叠过的)的最后一个字符字符和$t$时刻的字符一样时（非空）， 只有跟$t-1$时刻的组合字符是空格时才能保证$t$时刻的折叠路径是不一样的, 例如:</p>
+<p> $t-1$时刻:</p>
+<p>​          $[ab,e] \Rightarrow ab$  (结合空字符)，    $[ab,b] \Rightarrow ab$ (结合非空字符)</p>
+<p> $t$时刻 只有结合$t-1$时刻的空字符才能有不一样的折叠路径：</p>
+<p>​         $ [ab,e,b ]  \Rightarrow [abb]$</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment">#https://github.com/githubharald/CTCDecoder</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BeamEntry</span>:</span></span><br><span class="line">	<span class="string">"information about one single beam at specific time-step"</span></span><br><span class="line">  <span class="comment">#存储唯一折叠路径的信息 保存着未折叠前最后一个空字符概率，未折叠前最后一个非空字符概率</span></span><br><span class="line">	<span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></span><br><span class="line">		self.prTotal = <span class="number">0</span> <span class="comment"># blank and non-blank 对应公式12</span></span><br><span class="line">		self.prNonBlank = <span class="number">0</span> <span class="comment"># non-blank</span></span><br><span class="line">		self.prBlank = <span class="number">0</span> <span class="comment"># blank 对应公式13</span></span><br><span class="line">		self.prText = <span class="number">1</span> <span class="comment"># LM score 有语言模型时才有用</span></span><br><span class="line">		self.lmApplied = <span class="keyword">False</span> <span class="comment"># flag if LM was already applied to this beam 有语言模型时才有用</span></span><br><span class="line">		self.labeling = () <span class="comment"># beam-labeling</span></span><br><span class="line"></span><br><span class="line">    </span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BeamState</span>:</span></span><br><span class="line">	<span class="string">"information about the beams at specific time-step"</span></span><br><span class="line">  <span class="comment"># 存储所有折叠后的输出路径</span></span><br><span class="line">	<span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></span><br><span class="line">		self.entries = &#123;&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">def</span> <span class="title">norm</span><span class="params">(self)</span>:</span></span><br><span class="line">		<span class="string">"length-normalise LM score"</span></span><br><span class="line">		<span class="keyword">for</span> (k, _) <span class="keyword">in</span> self.entries.items():</span><br><span class="line">			labelingLen = len(self.entries[k].labeling)</span><br><span class="line">			self.entries[k].prText = self.entries[k].prText ** (<span class="number">1.0</span> / (labelingLen <span class="keyword">if</span> labelingLen <span class="keyword">else</span> <span class="number">1.0</span>))</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">def</span> <span class="title">sort</span><span class="params">(self)</span>:</span></span><br><span class="line">		<span class="string">"return beam-labelings, sorted by probability"</span></span><br><span class="line">    <span class="comment">#找出概率最大的前 beam siz个折叠后的输出路径</span></span><br><span class="line">		beams = [v <span class="keyword">for</span> (_, v) <span class="keyword">in</span> self.entries.items()]</span><br><span class="line">		sortedBeams = sorted(beams, reverse=<span class="keyword">True</span>, key=<span class="keyword">lambda</span> x: x.prTotal*x.prText)</span><br><span class="line">		<span class="keyword">return</span> [x.labeling <span class="keyword">for</span> x <span class="keyword">in</span> sortedBeams]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">applyLM</span><span class="params">(parentBeam, childBeam, classes, lm)</span>:</span></span><br><span class="line">	<span class="string">"calculate LM score of child beam by taking score from parent beam and bigram probability of last two chars"</span></span><br><span class="line">	<span class="keyword">if</span> lm <span class="keyword">and</span> <span class="keyword">not</span> childBeam.lmApplied:</span><br><span class="line">		c1 = classes[parentBeam.labeling[<span class="number">-1</span>] <span class="keyword">if</span> parentBeam.labeling <span class="keyword">else</span> classes.index(<span class="string">' '</span>)] <span class="comment"># first char</span></span><br><span class="line">		c2 = classes[childBeam.labeling[<span class="number">-1</span>]] <span class="comment"># second char</span></span><br><span class="line">		lmFactor = <span class="number">0.01</span> <span class="comment"># influence of language model</span></span><br><span class="line">		bigramProb = lm.getCharBigram(c1, c2) ** lmFactor <span class="comment"># probability of seeing first and second char next to each other</span></span><br><span class="line">		childBeam.prText = parentBeam.prText * bigramProb <span class="comment"># probability of char sequence</span></span><br><span class="line">		childBeam.lmApplied = <span class="keyword">True</span> <span class="comment"># only apply LM once per beam entry</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">addBeam</span><span class="params">(beamState, labeling)</span>:</span></span><br><span class="line">	<span class="string">"add beam if it does not yet exist"</span></span><br><span class="line">  <span class="comment"># 没有在字典里面管理的，就留个位置给它</span></span><br><span class="line">	<span class="keyword">if</span> labeling <span class="keyword">not</span> <span class="keyword">in</span> beamState.entries:</span><br><span class="line">		beamState.entries[labeling] = BeamEntry()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">ctcBeamSearch</span><span class="params">(mat, classes, lm, beamWidth=<span class="number">25</span>)</span>:</span></span><br><span class="line">	<span class="string">"beam search as described by the paper of Hwang et al. and the paper of Graves et al."</span></span><br><span class="line"></span><br><span class="line">	blankIdx = len(classes)</span><br><span class="line">	maxT, maxC = mat.shape</span><br><span class="line"></span><br><span class="line">	<span class="comment"># initialise beam state</span></span><br><span class="line">  <span class="comment">#没有开始之前 最开始的先默认放个空字符，prBlank的概率肯定是100%</span></span><br><span class="line">	last = BeamState()</span><br><span class="line">	labeling = ()</span><br><span class="line">	last.entries[labeling] = BeamEntry()</span><br><span class="line">	last.entries[labeling].prBlank = <span class="number">1</span></span><br><span class="line">	last.entries[labeling].prTotal = <span class="number">1</span></span><br><span class="line"></span><br><span class="line">	<span class="comment"># go over all time-steps</span></span><br><span class="line">	<span class="keyword">for</span> t <span class="keyword">in</span> range(maxT):</span><br><span class="line">		curr = BeamState()</span><br><span class="line"></span><br><span class="line">		<span class="comment"># get beam-labelings of best beams 为了减小计算量，需要减枝，只对前beamWidth个感兴趣</span></span><br><span class="line">		bestLabelings = last.sort()[<span class="number">0</span>:beamWidth]</span><br><span class="line"></span><br><span class="line">		<span class="comment"># go over best beams</span></span><br><span class="line">		<span class="keyword">for</span> labeling <span class="keyword">in</span> bestLabelings:</span><br><span class="line"></span><br><span class="line">			<span class="comment"># 先计算和上个时间节点输出折叠序列相同， 且最后一个字符不为空格的概率 公式14加号左边</span></span><br><span class="line">			prNonBlank = <span class="number">0</span></span><br><span class="line">			<span class="comment"># in case of non-empty beam</span></span><br><span class="line">			<span class="keyword">if</span> labeling:</span><br><span class="line">				<span class="comment"># probability of paths with repeated last char at the end</span></span><br><span class="line">				prNonBlank = last.entries[labeling].prNonBlank * mat[t, labeling[<span class="number">-1</span>]]</span><br><span class="line"></span><br><span class="line">			<span class="comment"># 计算和上个时间节点输出折叠序列相同， 且最后一个字符是空格的概率 公式13</span></span><br><span class="line">			prBlank = (last.entries[labeling].prTotal) * mat[t, blankIdx]</span><br><span class="line"></span><br><span class="line">			<span class="comment"># add beam at current time-step if needed</span></span><br><span class="line">			addBeam(curr, labeling)</span><br><span class="line"></span><br><span class="line">			<span class="comment"># fill in data</span></span><br><span class="line">			curr.entries[labeling].labeling = labeling</span><br><span class="line">			curr.entries[labeling].prNonBlank += prNonBlank</span><br><span class="line">			curr.entries[labeling].prBlank += prBlank</span><br><span class="line">			curr.entries[labeling].prTotal += prBlank + prNonBlank</span><br><span class="line">			curr.entries[labeling].prText = last.entries[labeling].prText <span class="comment"># beam-labeling not changed, therefore also LM score unchanged from</span></span><br><span class="line">			curr.entries[labeling].lmApplied = <span class="keyword">True</span> <span class="comment"># LM already applied at previous time-step for this beam-labeling</span></span><br><span class="line"></span><br><span class="line">			<span class="comment"># 先计算和上个时间节点输出折叠序列相同的的概率</span></span><br><span class="line">			<span class="keyword">for</span> c <span class="keyword">in</span> range(maxC - <span class="number">1</span>):<span class="comment">#注意， 已经除去了空字符，c肯定非空</span></span><br><span class="line">				<span class="comment"># add new char to current beam-labeling</span></span><br><span class="line">				newLabeling = labeling + (c,)</span><br><span class="line"></span><br><span class="line">				<span class="comment"># if new labeling contains duplicate char at the end, only consider paths ending with a blank</span></span><br><span class="line">        <span class="comment">#计算和上个时间节点输出折叠序列不相同的概率 公式14加号右边</span></span><br><span class="line">				<span class="keyword">if</span> labeling <span class="keyword">and</span> labeling[<span class="number">-1</span>] == c:</span><br><span class="line">          <span class="comment">#只有结合t-1时刻的空字符才能有不一样的折叠路径</span></span><br><span class="line">					prNonBlank = mat[t, c] * last.entries[labeling].prBlank</span><br><span class="line">				<span class="keyword">else</span>:</span><br><span class="line">          <span class="comment"># 当前字符和t-1时刻的折叠路径最后一个字符（必定非空）不同时，结合c(非空)就会输出不同的折叠路径</span></span><br><span class="line">					prNonBlank = mat[t, c] * last.entries[labeling].prTotal</span><br><span class="line"></span><br><span class="line">				<span class="comment"># add beam at current time-step if needed</span></span><br><span class="line">				addBeam(curr, newLabeling)</span><br><span class="line">				</span><br><span class="line">				<span class="comment"># fill in data</span></span><br><span class="line">				curr.entries[newLabeling].labeling = newLabeling</span><br><span class="line">				curr.entries[newLabeling].prNonBlank += prNonBlank</span><br><span class="line">				curr.entries[newLabeling].prTotal += prNonBlank</span><br><span class="line">				</span><br><span class="line">				<span class="comment"># 应用语言模型，如果有的话</span></span><br><span class="line">				applyLM(curr.entries[labeling], curr.entries[newLabeling], classes, lm)</span><br><span class="line"></span><br><span class="line">		<span class="comment"># set new beam state</span></span><br><span class="line">		last = curr</span><br><span class="line"></span><br><span class="line">	<span class="comment"># normalise LM scores according to beam-labeling-length</span></span><br><span class="line">	last.norm()</span><br><span class="line"></span><br><span class="line">	 <span class="comment"># sort by probability</span></span><br><span class="line">	bestLabeling = last.sort()[<span class="number">0</span>] <span class="comment"># get most probable labeling</span></span><br><span class="line"></span><br><span class="line">	<span class="comment"># map labels to chars</span></span><br><span class="line">	res = <span class="string">''</span></span><br><span class="line">	<span class="keyword">for</span> l <span class="keyword">in</span> bestLabeling:</span><br><span class="line">		res += classes[l]</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> res</span><br></pre></td></tr></table></figure>
+<p>参考：</p>
+<p><a href="https://blog.csdn.net/JackyTintin/article/details/79425866" target="_blank" rel="noopener">https://blog.csdn.net/JackyTintin/article/details/79425866</a></p>
+<p><a href="http://www.cs.toronto.edu/~graves/icml_2006.pdf" target="_blank" rel="noopener">原论文</a></p>
+<p><a href="https://docs.google.com/presentation/d/12gYcPft9_4cxk2AD6Z6ZlJNa3wvZCW1ms31nhq51vMk/pub?start=false&amp;loop=false&amp;delayms=3000&amp;slide=id.g24e9f0de4f_0_19958" target="_blank" rel="noopener">动态ppt</a></p>
+<p><a href="https://www.cnblogs.com/shiyublog/p/10493348.html#_label2_0" target="_blank" rel="noopener">https://www.cnblogs.com/shiyublog/p/10493348.html#_label2_0</a></p>
+<p><a href="https://xiaodu.io/ctc-explained-part2/" target="_blank" rel="noopener">https://xiaodu.io/ctc-explained-part2/</a></p>
+<p><a href="https://distill.pub/2017/ctc/" target="_blank" rel="noopener">https://distill.pub/2017/ctc/</a></p>
+<p><a href="https://stats.stackexchange.com/questions/320868/what-is-connectionist-temporal-classification-ctc" target="_blank" rel="noopener">https://stats.stackexchange.com/questions/320868/what-is-connectionist-temporal-classification-ctc</a></p>
+
+  </div>
+</article>
+
+    <div class="blog-post-comments">
+        <div id="disqus_thread">
+            <noscript>Please enable JavaScript to view the comments.</noscript>
+        </div>
+    </div>
+
+
+
+    </div>
+    
+      <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about">About</a></li>
+         
+          <li><a href="/archives">Writing</a></li>
+         
+          <li><a href="/tags">tags</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#CTC-loss"><span class="toc-number">1.</span> <span class="toc-text">CTC loss</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#前向后向算法（训练阶段）"><span class="toc-number">1.1.</span> <span class="toc-text">前向后向算法（训练阶段）</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#向前传播公式："><span class="toc-number">1.1.1.</span> <span class="toc-text">向前传播公式：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#向后传播公式："><span class="toc-number">1.1.2.</span> <span class="toc-text">向后传播公式：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#向前向后公式结合"><span class="toc-number">1.1.3.</span> <span class="toc-text">向前向后公式结合</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#导数"><span class="toc-number">2.</span> <span class="toc-text">导数</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#防止参数underflow"><span class="toc-number">2.1.</span> <span class="toc-text">防止参数underflow</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Softmax-函数求导"><span class="toc-number">2.2.</span> <span class="toc-text">Softmax 函数求导</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ctc求导"><span class="toc-number">2.3.</span> <span class="toc-text">ctc求导</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Beam-search-decoding"><span class="toc-number">3.</span> <span class="toc-text">Beam search decoding</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#疑问："><span class="toc-number">3.0.1.</span> <span class="toc-text">疑问：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#常规束算法："><span class="toc-number">3.0.2.</span> <span class="toc-text">常规束算法：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#改进束算法："><span class="toc-number">3.0.3.</span> <span class="toc-text">改进束算法：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#公式分析"><span class="toc-number">3.0.4.</span> <span class="toc-text">公式分析</span></a></li></ol></li></ol></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://d2rivendell.github.io/2020/01/05/CTC/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://d2rivendell.github.io/2020/01/05/CTC/&text=CTC"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://d2rivendell.github.io/2020/01/05/CTC/&title=CTC"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://d2rivendell.github.io/2020/01/05/CTC/&is_video=false&description=CTC"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=CTC&body=Check out this article: http://d2rivendell.github.io/2020/01/05/CTC/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://d2rivendell.github.io/2020/01/05/CTC/&title=CTC"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://d2rivendell.github.io/2020/01/05/CTC/&title=CTC"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://d2rivendell.github.io/2020/01/05/CTC/&title=CTC"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://d2rivendell.github.io/2020/01/05/CTC/&title=CTC"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://d2rivendell.github.io/2020/01/05/CTC/&name=CTC&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+    
+    <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy; 2020 leon
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about">About</a></li>
+         
+          <li><a href="/archives">Writing</a></li>
+         
+          <li><a href="/tags">tags</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"log":false,"model":{"jsonPath":"/live2dw/assets/hijiki.model.json"},"display":{"position":"right","width":75,"height":150},"mobile":{"show":true}});</script></body>
+</html>
+<!-- styles -->
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+<link rel="stylesheet" href="/lib/justified-gallery/css/justifiedGallery.min.css">
+
+<!-- jquery -->
+<script src="/lib/jquery/jquery.min.js"></script>
+<script src="/lib/justified-gallery/js/jquery.justifiedGallery.min.js"></script>
+<script src="/js/main.js"></script>
+<!-- search -->
+
+<!-- Google Analytics -->
+
+    <script type="text/javascript">
+        (function(i,s,o,g,r,a,m) {i['GoogleAnalyticsObject']=r;i[r]=i[r]||function() {
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+        ga('create', 'UA-127325381-1', 'auto');
+        ga('send', 'pageview');
+    </script>
+
+<!-- Baidu Analytics -->
+
+<!-- Disqus Comments -->
+
+    <script type="text/javascript">
+        var disqus_shortname = 'leonhwa';
+
+        (function(){
+            var dsq = document.createElement('script');
+            dsq.type = 'text/javascript';
+            dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        }());
+    </script>
+
+

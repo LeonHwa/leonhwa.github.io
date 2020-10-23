@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="description" content="相关公式已知 z= w x+ b \quad(1)a = g(z) =\frac{1}{1+e^{-z}} \quad(2)g^{\prime}(z) = g(z)(1-g(z)) \quad(3)$ L = -y \ln a - (1-y) \ln (1-a) \quad(4)$ J(w,b) = \frac{1}{m} \sum_{i=1}^{m}  L (\hat{y}^{(i)},  y^">
+<meta name="keywords" content="DL">
+<meta property="og:type" content="article">
+<meta property="og:title" content="反向传播公式总结">
+<meta property="og:url" content="http://d2rivendell.github.io/2019/10/25/反向传播公式总结/index.html">
+<meta property="og:site_name" content="rivendell">
+<meta property="og:description" content="相关公式已知 z= w x+ b \quad(1)a = g(z) =\frac{1}{1+e^{-z}} \quad(2)g^{\prime}(z) = g(z)(1-g(z)) \quad(3)$ L = -y \ln a - (1-y) \ln (1-a) \quad(4)$ J(w,b) = \frac{1}{m} \sum_{i=1}^{m}  L (\hat{y}^{(i)},  y^">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://d2rivendell.github.io/images/DNN反向传播.png">
+<meta property="og:updated_time" content="2020-10-23T09:07:38.913Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="反向传播公式总结">
+<meta name="twitter:description" content="相关公式已知 z= w x+ b \quad(1)a = g(z) =\frac{1}{1+e^{-z}} \quad(2)g^{\prime}(z) = g(z)(1-g(z)) \quad(3)$ L = -y \ln a - (1-y) \ln (1-a) \quad(4)$ J(w,b) = \frac{1}{m} \sum_{i=1}^{m}  L (\hat{y}^{(i)},  y^">
+<meta name="twitter:image" content="http://d2rivendell.github.io/images/DNN反向传播.png">
+    
+    
+        
+          
+              <link rel="shortcut icon" href="/images/favicon.ico">
+          
+        
+        
+          
+            <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+          
+        
+        
+          
+            <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+          
+        
+    
+    <!-- title -->
+    <title>反向传播公式总结</title>
+    <!-- styles -->
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- persian styles -->
+    
+      <link rel="stylesheet" href="/css/rtl.css">
+    
+    <!-- rss --><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+    
+    
+</head>
+
+<body class="max-width mx-auto px3 ltl">    
+      <!-- hexo-inject:begin --><!-- hexo-inject:end --><div id="header-post">
+  <a id="menu-icon" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about">About</a></li>
+         
+          <li><a href="/archives">Writing</a></li>
+         
+          <li><a href="/tags">tags</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" href="/2020/01/05/CTC/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" href="/2019/10/15/BatchNormal/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://d2rivendell.github.io/2019/10/25/反向传播公式总结/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://d2rivendell.github.io/2019/10/25/反向传播公式总结/&text=反向传播公式总结"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://d2rivendell.github.io/2019/10/25/反向传播公式总结/&title=反向传播公式总结"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://d2rivendell.github.io/2019/10/25/反向传播公式总结/&is_video=false&description=反向传播公式总结"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=反向传播公式总结&body=Check out this article: http://d2rivendell.github.io/2019/10/25/反向传播公式总结/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://d2rivendell.github.io/2019/10/25/反向传播公式总结/&title=反向传播公式总结"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://d2rivendell.github.io/2019/10/25/反向传播公式总结/&title=反向传播公式总结"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://d2rivendell.github.io/2019/10/25/反向传播公式总结/&title=反向传播公式总结"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://d2rivendell.github.io/2019/10/25/反向传播公式总结/&title=反向传播公式总结"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://d2rivendell.github.io/2019/10/25/反向传播公式总结/&name=反向传播公式总结&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#相关公式"><span class="toc-number">1.</span> <span class="toc-text">相关公式</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#代码实现"><span class="toc-number"></span> <span class="toc-text">代码实现</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#借助dA计算进行反向传播"><span class="toc-number">0.1.</span> <span class="toc-text">借助dA计算进行反向传播</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#借助dz计算进行反向传播"><span class="toc-number">0.2.</span> <span class="toc-text">借助dz计算进行反向传播</span></a></li></ol></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index my4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        反向传播公式总结
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">rivendell</span>
+      </span>
+      
+    <div class="postdate">
+        <time datetime="2019-10-25T15:29:38.000Z" itemprop="datePublished">2019-10-25</time>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link" href="/tags/DL/">DL</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h3 id="相关公式"><a href="#相关公式" class="headerlink" title="相关公式"></a>相关公式</h3><p>已知</p>
+<script type="math/tex; mode=display">z= w x+ b \quad(1)</script><script type="math/tex; mode=display">a = g(z) =\frac{1}{1+e^{-z}} \quad(2)</script><script type="math/tex; mode=display">g^{\prime}(z) = g(z)(1-g(z)) \quad(3)</script><p>$ L = -y \ln a - (1-y) \ln (1-a) \quad(4)$</p>
+<script type="math/tex; mode=display">J(w,b) = \frac{1}{m} \sum_{i=1}^{m}  L (\hat{y}^{(i)},  y^{(i)}) = \frac{1}{m} \sum_{i = 1}^{m}\left (-y^{(i)} log\hat{y}^{(i)} - (1 - y^{(i)} ) log(1- \hat{y}^{(i)}) \right) \quad(5)</script><p>四个基本方程</p>
+<p>$\delta^{L}=\nabla_{a} C \odot \sigma^{\prime}\left(z^{L}\right)  \quad(\mathrm{BP} 1)$</p>
+<p>$\delta^{l}=\left(\left(w^{l+1}\right)^{T} \delta^{l+1}\right) \odot \sigma^{\prime}\left(z^{l}\right) \quad(\mathrm{BP} 2)$</p>
+<p>$\frac{\partial C}{\partial b<em>{j}^{L}}=\delta</em>{j}^{l} \quad(\mathrm{BP} 3)$</p>
+<p>$\frac{\partial C}{\partial w<em>{j k}^{l}}=a</em>{k}^{l-1} \delta_{j}^{l} \quad(\mathrm{BP} 4)$</p>
+<p>由BP1和BP2可知</p>
+<p>$\frac{\partial L(w,b)}{\partial a}=\left(w^{l+1}\right)^{T} \delta^{l+1} \quad(6)$</p>
+<p>对于最后一个输出的A的导数$\frac{\partial L(w,b)}{\partial a}$为：</p>
+<p>$ \begin{aligned}  \frac{\partial L(w,b)}{\partial a} &amp;=  -\frac{y}{a} + \frac{1-y}{1-a}   \ &amp; = \frac{a- y}{a(1-a)} \end{aligned} \quad(7) $</p>
+<p>为了能更灵活地组合线性函数和激活函数，线性函数，激活函数地向前传播和向后传播都独立地写</p>
+<p>在这里计算dz 都是用BP1公式（<a href="http://neuralnetworksanddeeplearning.com/" target="_blank" rel="noopener">http://neuralnetworksanddeeplearning.com/</a> 中是最后一层用BP1算出dz， 再利用BP2算出前面的dz，再一直反向推导出dw,db)</p>
+<p><img src="/images/DNN反向传播.png" alt></p>
+<h2 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h2><h4 id="借助dA计算进行反向传播"><a href="#借助dA计算进行反向传播" class="headerlink" title="借助dA计算进行反向传播"></a>借助dA计算进行反向传播</h4><p>最后一个输出的dA可以使用公式7计算出来</p>
+<p>部分公式如下</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">    </span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">sigmoid_backward</span><span class="params">(dA, cache)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    dz = (delta C / delta A) * activation_derivative</span></span><br><span class="line"><span class="string">    :param dA: (delta C / delta A)</span></span><br><span class="line"><span class="string">    :param cache: z</span></span><br><span class="line"><span class="string">    :return:</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    z = cache</span><br><span class="line">    dz = dA * sigmoid_derivate(z)</span><br><span class="line">    <span class="keyword">return</span> dz</span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">linear_backward</span><span class="params">(self, dz, cache)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        只包含线性函数的反向传播计算</span></span><br><span class="line"><span class="string">        :param dz: delta值 (n_2, m)</span></span><br><span class="line"><span class="string">        :param cache: 包含 A_prev(n_1, m), w(n_2, n_1), b(n_2, 1)</span></span><br><span class="line"><span class="string">        :return:  dA_prev, dw, db</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        A_prev, w, b = cache</span><br><span class="line">        m = A_prev.shape[<span class="number">1</span>]</span><br><span class="line">        dw = (dz @ A_prev.T)/m  <span class="comment"># BP4 </span></span><br><span class="line">        db = np.sum(dz, axis=<span class="number">1</span>, keepdims=<span class="keyword">True</span>)/m</span><br><span class="line">        dA_prev = w.T @ dz  <span class="comment"># 结合BP1和BP2</span></span><br><span class="line">        <span class="keyword">return</span> dA_prev, dw, db</span><br><span class="line">      </span><br><span class="line">dAL = -np.divide(Y, AL) + np.divide(<span class="number">1</span> - Y, <span class="number">1</span> - AL) </span><br><span class="line">dz = sigmoid_backward(dA, cache[<span class="number">1</span>]) <span class="comment">#cache = ((a,w,b), z)</span></span><br><span class="line">dA_prev, dw, db = linear_backward(self, dz, cache[<span class="number">0</span>]) <span class="comment">#cache = ((a,w,b), z)</span></span><br><span class="line">...</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<h4 id="借助dz计算进行反向传播"><a href="#借助dz计算进行反向传播" class="headerlink" title="借助dz计算进行反向传播"></a>借助dz计算进行反向传播</h4><p>最后一个输出的dz可以使用BP1 公式7计算出来 （和<a href="http://neuralnetworksanddeeplearning.com/" target="_blank" rel="noopener">http://neuralnetworksanddeeplearning.com/</a> 一致）</p>
+<p>由公式7得知$  \frac{\partial L(w,b)}{\partial a} =  -\frac{y}{a} + \frac{1-y}{1-a}   = \frac{a- y}{a(1-a)} $</p>
+<p>对于激活函数为sigmoid函数时，由公式3可知$g^{\prime}(z) = g(z)(1-g(z))$</p>
+<p> $\frac{\partial L(w,b)}{\partial z} = \frac{\partial L(w,b)}{\partial a}\frac{\partial a}{\partial z} = \frac{a- y}{a(1-a)} * a(1-a) = a - y$</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">backward_propagation</span><span class="params">(self, X, Y)</span>:</span></span><br><span class="line">       <span class="string">"""</span></span><br><span class="line"><span class="string">       只有一个隐藏层的简单神经网络的反向传播</span></span><br><span class="line"><span class="string">       :param X: (n, m)</span></span><br><span class="line"><span class="string">       :param Y:</span></span><br><span class="line"><span class="string">       :return:</span></span><br><span class="line"><span class="string">       """</span></span><br><span class="line">       m = X.shape[<span class="number">1</span>]</span><br><span class="line">       w2 = self.parameters[<span class="string">"w2"</span>]</span><br><span class="line">       A2, cache = self.forward_propagation(X)</span><br><span class="line">       A1 = cache[<span class="string">"A1"</span>]  <span class="comment"># (m_1 x m_0)</span></span><br><span class="line">       z1 = cache[<span class="string">"z1"</span>]</span><br><span class="line">       dz2 = (A2 - Y)  <span class="comment"># (m_2 x m_0) 参考《损失函数和代价函数》公式7  公式11</span></span><br><span class="line">       dw2 = (dz2 @ A1.T)/m  <span class="comment"># (m_2 x m_1)</span></span><br><span class="line">       db2 = np.sum(dz2, axis=<span class="number">1</span>, keepdims=<span class="keyword">True</span>)/m</span><br><span class="line"></span><br><span class="line">       dz1 = np.multiply((w2.T @ dz2), tanh_derivate(z1))</span><br><span class="line">       dw1 = (dz1 @ X.T)/m</span><br><span class="line">       db1 = np.sum(dz1, axis=<span class="number">1</span>, keepdims=<span class="keyword">True</span>)/m</span><br><span class="line">       back_pro = &#123;<span class="string">"dw1"</span>: dw1,</span><br><span class="line">                   <span class="string">"db1"</span>: db1,</span><br><span class="line">                   <span class="string">"dw2"</span>: dw2,</span><br><span class="line">                   <span class="string">"db2"</span>: db2,</span><br><span class="line">                   &#125;</span><br><span class="line">       <span class="keyword">return</span> back_pro, cache</span><br></pre></td></tr></table></figure>
+
+  </div>
+</article>
+
+    <div class="blog-post-comments">
+        <div id="disqus_thread">
+            <noscript>Please enable JavaScript to view the comments.</noscript>
+        </div>
+    </div>
+
+
+
+    </div>
+    
+      <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about">About</a></li>
+         
+          <li><a href="/archives">Writing</a></li>
+         
+          <li><a href="/tags">tags</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#相关公式"><span class="toc-number">1.</span> <span class="toc-text">相关公式</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#代码实现"><span class="toc-number"></span> <span class="toc-text">代码实现</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#借助dA计算进行反向传播"><span class="toc-number">0.1.</span> <span class="toc-text">借助dA计算进行反向传播</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#借助dz计算进行反向传播"><span class="toc-number">0.2.</span> <span class="toc-text">借助dz计算进行反向传播</span></a></li></ol></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://d2rivendell.github.io/2019/10/25/反向传播公式总结/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://d2rivendell.github.io/2019/10/25/反向传播公式总结/&text=反向传播公式总结"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://d2rivendell.github.io/2019/10/25/反向传播公式总结/&title=反向传播公式总结"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://d2rivendell.github.io/2019/10/25/反向传播公式总结/&is_video=false&description=反向传播公式总结"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=反向传播公式总结&body=Check out this article: http://d2rivendell.github.io/2019/10/25/反向传播公式总结/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://d2rivendell.github.io/2019/10/25/反向传播公式总结/&title=反向传播公式总结"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://d2rivendell.github.io/2019/10/25/反向传播公式总结/&title=反向传播公式总结"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://d2rivendell.github.io/2019/10/25/反向传播公式总结/&title=反向传播公式总结"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://d2rivendell.github.io/2019/10/25/反向传播公式总结/&title=反向传播公式总结"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://d2rivendell.github.io/2019/10/25/反向传播公式总结/&name=反向传播公式总结&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+    
+    <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy; 2020 leon
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about">About</a></li>
+         
+          <li><a href="/archives">Writing</a></li>
+         
+          <li><a href="/tags">tags</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"log":false,"model":{"jsonPath":"/live2dw/assets/hijiki.model.json"},"display":{"position":"right","width":75,"height":150},"mobile":{"show":true}});</script></body>
+</html>
+<!-- styles -->
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+<link rel="stylesheet" href="/lib/justified-gallery/css/justifiedGallery.min.css">
+
+<!-- jquery -->
+<script src="/lib/jquery/jquery.min.js"></script>
+<script src="/lib/justified-gallery/js/jquery.justifiedGallery.min.js"></script>
+<script src="/js/main.js"></script>
+<!-- search -->
+
+<!-- Google Analytics -->
+
+    <script type="text/javascript">
+        (function(i,s,o,g,r,a,m) {i['GoogleAnalyticsObject']=r;i[r]=i[r]||function() {
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+        ga('create', 'UA-127325381-1', 'auto');
+        ga('send', 'pageview');
+    </script>
+
+<!-- Baidu Analytics -->
+
+<!-- Disqus Comments -->
+
+    <script type="text/javascript">
+        var disqus_shortname = 'leonhwa';
+
+        (function(){
+            var dsq = document.createElement('script');
+            dsq.type = 'text/javascript';
+            dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        }());
+    </script>
+
+
